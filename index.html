@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html><head><style>
+@font-face {
+  font-family: "Optimistic";
+  font-style: normal;
+  font-weight: 400 600;
+  font-display: swap;
+  src: url("/fonts/OptimisticAI_VF_Optimized.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Optimistic Mono";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/OptimisticMono_W_TextRegular.woff2") format("woff2");
+}
+:where(html) {
+  font-family: "Optimistic", system-ui, sans-serif;
+}
+:where(code, pre, kbd, samp) {
+  font-family: "Optimistic Mono", ui-monospace, monospace;
+}
+</style><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>REAL Scalp Bot V2 Fixed</title>
+<script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+body{background:#0a0a0b;color:#e5e7eb;font-family:Inter,sans-serif}
+.glass{background:#18181b;border:1px solid #3f3f46}
+input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+.mono{font-family:monospace}
+.profit{color:#22c55e}.loss{color:#ef4444}
+</style>
+</head>
+<body class="p-3">
+<div class="max-w-[600px] mx-auto space-y-4">
+<div class="flex justify-between items-center glass rounded-2xl p-3 sticky top-2 z-50">
+<div><h1 class="font-black">REAL SCALP BOT</h1><p class="text-[10px] text-zinc-500">BINANCE FUTURES • LIVE</p></div>
+<div class="flex gap-2"><button id="startBtn" class="px-4 py-2 bg-green-600 rounded-xl text-sm font-bold">START</button><button id="stopBtn" class="px-4 py-2 bg-zinc-800 rounded-xl text-sm font-bold">STOP</button></div>
+</div>
+
+<div class="grid grid-cols-3 gap-2">
+<div class="glass rounded-2xl p-3"><p class="text-[10px] text-zinc-500">USDT BALANCE REAL</p><p id="bal" class="text-xl font-black mono">$0.00</p><p id="balFree" class="text-[10px] text-zinc-500">Free $0</p></div>
+<div class="glass rounded-2xl p-3"><p class="text-[10px] text-zinc-500">PNL TODAY REAL</p><p id="pnl" class="text-xl font-black mono profit">$0.00</p><p class="text-[10px] text-zinc-500"><span class="profit">WIN</span> / <span class="loss">LOSS</span></p></div>
+<div class="glass rounded-2xl p-3"><p class="text-[10px] text-zinc-500">WIN RATE</p><p id="winRate" class="text-xl font-black mono profit">0%</p><p class="text-[10px] text-zinc-500">trades</p></div>
+</div>
+
+<div class="glass rounded-[24px] p-5">
+<div class="flex justify-between items-center mb-5"><h2 class="font-bold">Bot Settings • REAL</h2><span class="px-3 py-1 rounded-full bg-zinc-800 text-[11px]">USDT 1 works</span></div>
+
+<div class="grid grid-cols-2 gap-3 mb-4">
+<div><label class="text-[11px] text-zinc-500">MARGIN / TRADE (USDT)</label><div class="relative mt-2"><input id="margin" inputmode="decimal" type="text" value="5" class="w-full bg-[#0a0a0b] border border-zinc-700 rounded-2xl px-4 py-4 text-lg mono outline-none focus:border-yellow-400"><span class="absolute right-4 top-4 text-zinc-500">$</span></div><p class="text-[11px] text-zinc-500 mt-2">USDT 1 unath trade karanna puluwan via notional = margin x leverage</p></div>
+<div><label class="text-[11px] text-zinc-500">MIN USDT</label><input id="minUsdt" inputmode="decimal" type="text" value="1" class="w-full bg-[#0a0a0b] border border-zinc-700 rounded-2xl px-4 py-4 text-lg mono mt-2 outline-none focus:border-yellow-400"></div>
+</div>
+
+<div class="mb-6"><div class="flex justify-between"><label class="text-[11px] text-zinc-500">LEVERAGE <span id="levLabel">25X</span></label><span id="notional" class="text-[12px] text-yellow-400">25x • 125$ notional</span></div>
+<input id="leverage" type="range" min="1" max="125" value="25" class="w-full mt-4 accent-yellow-400 h-2"><div class="flex justify-between text-[11px] text-zinc-500 mt-1"><span>1x</span><span>25x</span><span>125x</span></div></div>
+
+<div class="grid grid-cols-3 gap-3 mb-6">
+<div><label class="text-[11px] text-zinc-500">TP %</label><input id="tp" inputmode="decimal" type="text" value="0.6" class="w-full bg-[#0a0a0b] border border-zinc-700 rounded-2xl px-4 py-4 text-lg mono mt-2 outline-none focus:border-green-500 text-green-400"></div>
+<div><label class="text-[11px] text-zinc-500">SL %</label><input id="sl" inputmode="decimal" type="text" value="0.8" class="w-full bg-[#0a0a0b] border border-zinc-700 rounded-2xl px-4 py-4 text-lg mono mt-2 outline-none focus:border-red-500 text-red-400"></div>
+<div><label class="text-[11px] text-zinc-500">MAX POS</label><input id="maxPos" inputmode="numeric" type="text" value="1" class="w-full bg-[#0a0a0b] border border-zinc-700 rounded-2xl px-4 py-4 text-lg mono mt-2 outline-none focus:border-yellow-400"></div>
+</div>
+
+<button id="saveBtn" class="w-full py-5 rounded-full bg-yellow-400 text-black font-black text-[14px]">SAVE SETTINGS • REAL BOT</button>
+</div>
+
+<div class="glass rounded-2xl p-4"><h3 class="font-bold text-sm mb-2">OPEN POSITIONS (REAL)</h3><div id="pos" class="text-xs mono">No positions</div></div>
+<div class="glass rounded-2xl p-4"><h3 class="font-bold text-sm mb-2">TRADE HISTORY • WIN/LOSS REAL</h3><div id="hist" class="text-[11px] mono">No trades</div></div>
+
+<div class="glass rounded-2xl p-4 text-[11px]">GitHub → Railway: Variables tab eke BINANCE_API_KEY, BINANCE_API_SECRET, BINANCE_MODE add karanna. Code eke keys danna epa.</div>
+</div>
+<script>
+function setupInput(id){
+  const el=document.getElementById(id);
+  el.addEventListener('focus',()=>{el.select();});
+  el.addEventListener('input',(e)=>{
+    let v=e.target.value;
+    if(v===''){updateNotional();return;}
+    if(!/^[0-9]*\.?[0-9]*$/.test(v)){e.target.value=v.slice(0,-1);return;}
+    updateNotional();
+  });
+}
+['margin','minUsdt','tp','sl','maxPos'].forEach(setupInput);
+const lev=document.getElementById('leverage');
+lev.addEventListener('input',()=>{
+  document.getElementById('levLabel').textContent=lev.value+'X';
+  updateNotional();
+});
+function updateNotional(){
+  const margin=parseFloat(document.getElementById('margin').value)||0;
+  const l=parseFloat(lev.value)||1;
+  document.getElementById('notional').textContent=l+'x • '+(margin*l)+'$ notional';
+}
+document.getElementById('saveBtn').onclick=()=>{
+  const data={margin:document.getElementById('margin').value,minUsdt:document.getElementById('minUsdt').value,leverage:lev.value,tp:document.getElementById('tp').value,sl:document.getElementById('sl').value,maxPos:document.getElementById('maxPos').value};
+  fetch('/api/config',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({leverage:data.leverage,marginUsdt:data.margin,tpPercent:data.tp,slPercent:data.sl,maxPositions:data.maxPos,minUsdt:data.minUsdt})}).then(()=>alert('Saved: '+JSON.stringify(data)));
+};
+function el(id){return document.getElementById(id)}
+const socket=io();
+socket.on('balance',b=>{el('bal').textContent='$'+(b.total||0).toFixed(2);el('balFree').textContent='Free $'+(b.free||0).toFixed(2);document.getElementById('pnl').textContent=(b.pnl>=0?'+':'')+'$'+(b.pnl||0).toFixed(2);});
+socket.on('positions',p=>{document.getElementById('pos').innerHTML=p.length?p.map(x=>`<div class="flex justify-between bg-[#0a0a0b] p-3 rounded-xl mt-2"><span>${x.symbol} ${x.side}</span><span class="${(x.unrealizedPnl||0)>=0?'profit':'loss'}">${(x.unrealizedPnl||0).toFixed(2)}</span></div>`).join(''):'No positions';});
+socket.on('newTrade',t=>{document.getElementById('hist').innerHTML=`<div class="bg-[#0a0a0b] p-3 rounded-xl mt-2 flex justify-between"><span>${t.pair} ${t.side} @${t.entryPrice.toFixed(4)}</span><span class="profit">${t.confidence}%</span></div>`+document.getElementById('hist').innerHTML;});
+document.getElementById('startBtn').onclick=()=>{fetch('/api/bot/start',{method:'POST'});document.getElementById('startBtn').textContent='RUNNING';};
+document.getElementById('stopBtn').onclick=()=>{fetch('/api/bot/stop',{method:'POST'});document.getElementById('startBtn').textContent='START';};
+updateNotional();
+</script>
+<script>(function(){var loc=location.href.replace(/#.*$/,"");var ATTR_NAMES=["data-product-id","data-productid","data-product_id","product-id","productid","product_id","data-source-entity-id","source-entity-id","source_entity_id","data-product","data-metadata","data-meta"];var DATASET_KEYS=["productId","productid","product_id","sourceEntityId","sourceentityid","source_entity_id","product","metadata","meta"];function readProductId(value){if(typeof value!=="string"||value.length===0)return null;if(/^[0-9]{6,}$/.test(value))return value;var match=value.match(/(?:product(?:_|-)?id|source(?:_|-)?entity(?:_|-)?id)["'=:\s]+([0-9]{6,})/i);return match?match[1]:null}function extractProductId(start){for(var node=start;node&&node!==document.body;node=node.parentElement){for(var i=0;i<ATTR_NAMES.length;i++){var attrValue=node.getAttribute&&node.getAttribute(ATTR_NAMES[i]);var attrProductId=readProductId(attrValue);if(attrProductId)return attrProductId}var dataset=node.dataset||null;if(dataset){for(var j=0;j<DATASET_KEYS.length;j++){var dataValue=dataset[DATASET_KEYS[j]];var dataProductId=readProductId(dataValue);if(dataProductId)return dataProductId}}}return null}function isInlineMediaSlotElement(node){return !!(node&&node.getAttribute&&node.getAttribute("data-clippy-inline-media-slot")!==null)}function findInlineMediaSlot(start){for(var node=start;node&&node!==document.body;node=node.parentElement){if(isInlineMediaSlotElement(node))return node}return null}function readInlineMediaUrl(node){if(!node)return null;return node.getAttribute&&((node.getAttribute("data-clippy-inline-media-url")||node.getAttribute("data-url")||node.getAttribute("data_url")))||node.href||null}function stripHash(url){return String(url).replace(/#.*$/,"")}function urlsMatch(a,b){if(!a||!b)return false;try{return stripHash(new URL(a,loc).href)===stripHash(new URL(b,loc).href)}catch(_){return stripHash(a)===stripHash(b)}}function isFirstPartyReelUrl(value){try{var url=new URL(value,loc);if(url.protocol!=="https:")return false;var host=url.hostname.toLowerCase();var supported=host==="instagram.com"||host.endsWith(".instagram.com")||host==="facebook.com"||host.endsWith(".facebook.com");return supported&&/\/reels?\//i.test(url.pathname)}catch(_){return false}}function isInlineMediaUrlClick(node,href){var slot=findInlineMediaSlot(node);if(!slot)return false;var slotUrl=readInlineMediaUrl(slot);if(slotUrl)return urlsMatch(href,slotUrl);return isFirstPartyReelUrl(href)}function findDataHref(start){for(var node=start;node&&node!==document.body;node=node.parentElement){if(node.getAttribute){var href=node.getAttribute("data-href")||node.getAttribute("data-url");if(href)return{href:href,node:node}}}return null}var nativeOpen=window.open;window.open=function(url){if(parent!==window&&typeof url==="string"&&/^https?:\/\//.test(url)){parent.postMessage({type:"ecto:usercontent-link-click",href:url},"*");return null}return nativeOpen?nativeOpen.apply(window,arguments):null};document.addEventListener("click",function(e){var target=e.target instanceof Element?e.target:null;if(!target)return;if(parent===window)return;var a=target.closest?target.closest("a[href]"):null;if(a&&a.href&&/^https?:\/\//.test(a.href)&&a.href.replace(/#.*$/,"")!==loc){if(isInlineMediaUrlClick(a,a.href))return;var productId=extractProductId(target)||extractProductId(a);if(productId){e.preventDefault();parent.postMessage({type:"ecto-artifact-link-click",productId:productId},"*");return}e.preventDefault();parent.postMessage({type:"ecto:usercontent-link-click",href:a.href},"*");return}var dataHref=findDataHref(target);if(dataHref&&/^https?:\/\//.test(dataHref.href)&&dataHref.href.replace(/#.*$/,"")!==loc){if(isInlineMediaUrlClick(dataHref.node,dataHref.href))return;e.preventDefault();parent.postMessage({type:"ecto:usercontent-link-click",href:dataHref.href},"*")}},true)})();</script><script>(function(){var FOCUS_TYPE="ecto:artifact-focus-request";var CLOSE_TYPE="ecto:artifact-close-request";function focusArtifactDocument(){var body=document.body;if(!body)return;try{window.focus();}catch(e){}if(!body.hasAttribute("tabindex"))body.setAttribute("tabindex","-1");try{body.focus({preventScroll:true});}catch(e){try{body.focus();}catch(e2){}}}window.addEventListener("message",function(event){if(event.source!==window.parent)return;var data=event.data;if(!data||typeof data!=="object"||data.type!==FOCUS_TYPE)return;if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",focusArtifactDocument,{once:true});return;}focusArtifactDocument();});window.addEventListener("keydown",function(event){if(event.key!=="Escape")return;window.setTimeout(function(){if(event.defaultPrevented)return;window.parent.postMessage({type:CLOSE_TYPE},"*");},0);});})();</script></body></html>
