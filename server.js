@@ -4,6 +4,7 @@ const { Server } = require('socket.io');
 const ccxt = require('ccxt');
 const WebSocket = require('ws');
 const cors = require('cors');
+const path = require('path');
 require('dotenv').config();
 
 const app = express();
@@ -12,7 +13,9 @@ const io = new Server(server, { cors: { origin: "*" } });
 
 app.use(cors());
 app.use(express.json());
-app.use(express.static('public'));
+app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(__dirname));
+const fs = require('fs');
 
 const MODE = process.env.BINANCE_MODE || 'testnet';
 const IS_TESTNET = MODE === 'testnet';
@@ -122,7 +125,7 @@ function calculateSignal(candles) {
 }
 
 async function executeTrade(pair, signal, confidence) {
-  if(!exchange ||!BOT_CONFIG.isRunning) return;
+  if(!exchange || !BOT_CONFIG.isRunning) return;
   if(positions.length >= BOT_CONFIG.maxPositions) return;
   if(balance.free < BOT_CONFIG.marginUsdt) return;
   try {
@@ -135,10 +138,10 @@ async function executeTrade(pair, signal, confidence) {
       await exchange.setLeverage(BOT_CONFIG.leverage, symbol);
       await exchange.setMarginMode('ISOLATED', symbol);
     } catch(e){}
-    const side = signal === 'LONG'? 'buy' : 'sell';
+    const side = signal === 'LONG' ? 'buy' : 'sell';
     const order = await exchange.createMarketOrder(symbol, side, qty);
-    const tpPrice = signal==='LONG'? price*(1+BOT_CONFIG.tpPercent/100) : price*(1-BOT_CONFIG.tpPercent/100);
-    const slPrice = signal==='LONG'? price*(1-BOT_CONFIG.slPercent/100) : price*(1-BOT_CONFIG.slPercent/100);
+    const tpPrice = signal==='LONG' ? price*(1+BOT_CONFIG.tpPercent/100) : price*(1-BOT_CONFIG.tpPercent/100);
+    const slPrice = signal==='LONG' ? price*(1-BOT_CONFIG.slPercent/100) : price*(1-BOT_CONFIG.slPercent/100);
     try {
       await exchange.createOrder(symbol, 'TAKE_PROFIT_MARKET', signal==='LONG'?'sell':'buy', qty, undefined, { stopPrice: tpPrice, closePosition: true });
       await exchange.createOrder(symbol, 'STOP_MARKET', signal==='LONG'?'sell':'buy', qty, undefined, { stopPrice: slPrice, closePosition: true });
@@ -161,8 +164,8 @@ async function startScanner() {
       try {
         const candles = await exchange.fetchOHLCV(pair, '1m', undefined, 210);
         const analysis = calculateSignal(candles);
-        marketData[pair] = {...analysis, pair, lastUpdate: Date.now() };
-        if(analysis.signal!== 'HOLD' && analysis.confidence >= 80){
+        marketData[pair] = { ...analysis, pair, lastUpdate: Date.now() };
+        if(analysis.signal !== 'HOLD' && analysis.confidence >= 80){
           await executeTrade(pair, analysis.signal, analysis.confidence);
         }
       } catch(e){}
@@ -212,6 +215,22 @@ app.get('/api/balance', async (req,res)=>{ await fetchBalance(); res.json(balanc
 app.get('/api/positions', (req,res)=> res.json(positions));
 app.get('/api/history', (req,res)=> res.json(tradeHistory));
 
+// FIX: Root route - works with both public/index.html and root index.html (phone workaround)
+app.get('/', (req,res)=>{
+  const publicPath = path.join(__dirname, 'public', 'index.html');
+  const rootPath = path.join(__dirname, 'index.html');
+  const altPath = path.join(__dirname, 'public', 'index.html');
+  if (fs.existsSync(publicPath)) {
+    return res.sendFile(publicPath);
+  } else if (fs.existsSync(rootPath)) {
+    return res.sendFile(rootPath);
+  } else if (fs.existsSync(altPath)) {
+    return res.sendFile(altPath);
+  } else {
+    return res.send('<h1>Bot Running but index.html not found</h1><p>GitHub eke public/index.html or index.html file eka danna</p><p>API: /api/config working? ' + JSON.stringify(BOT_CONFIG) + '</p>');
+  }
+});
+
 io.on('connection', (socket)=>{
   socket.emit('config', BOT_CONFIG);
   socket.emit('balance', balance);
@@ -222,10 +241,9 @@ io.on('connection', (socket)=>{
   socket.on('disconnect', ()=> clearInterval(balInterval));
 });
 
-// Auto connect from Railway env vars
 if(process.env.BINANCE_API_KEY && process.env.BINANCE_API_SECRET){
   initExchange(process.env.BINANCE_API_KEY, process.env.BINANCE_API_SECRET, MODE);
-  fetchBalance().then(()=>{ console.log('Auto connected from Railway env'); startScanner(); });
+  fetchBalance().then(()=>{ console.log('Auto connected from Railway env'); startScanner(); }).catch(e=>console.log('Auto connect failed', e.message));
 }
 
 const PORT = process.env.PORT || 3000;
