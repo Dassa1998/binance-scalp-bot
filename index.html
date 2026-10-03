@@ -21,88 +21,153 @@
   font-family: "Optimistic Mono", ui-monospace, monospace;
 }
 </style><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
-<title>REAL Scalp Bot V2 Fixed</title>
+<title>ULTRA SCALP V4.1 - Trail Act %</title>
 <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
 <script src="https://cdn.tailwindcss.com"></script>
 <style>
-body{background:#0a0a0b;color:#e5e7eb;font-family:Inter,sans-serif}
-.glass{background:#18181b;border:1px solid #3f3f46}
-input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+body{background:#050507;color:#e5e7eb;font-family:Inter,sans-serif}
+.glass{background:#151518;border:1px solid #2a2a2e;box-shadow:0 4px 20px rgba(0,0,0,.5)}
 .mono{font-family:monospace}
 .profit{color:#22c55e}.loss{color:#ef4444}
+.log{font-size:11px; font-family:monospace; border-bottom:1px solid #1f1f23; padding:5px 0}
+.log.trade{color:#facc15} .log.signal{color:#38bdf8} .log.profit{color:#22c55e; font-weight:bold} .log.error{color:#ef4444} .log.turbo{color:#f97316; font-weight:bold; background:#1a1207; padding:6px; border-radius:8px} .log.success{color:#22c55e}
+.pulse{animation:pulse 1.5s infinite} @keyframes pulse{0%,100%{opacity:1} 50%{opacity:.5}}
+.trail-active{background:linear-gradient(90deg, #22c55e20, #facc1520); border:1px solid #22c55e50}
 </style>
 </head>
-<body class="p-3">
-<div class="max-w-[600px] mx-auto space-y-4">
-<div class="flex justify-between items-center glass rounded-2xl p-3 sticky top-2 z-50">
-<div><h1 class="font-black">REAL SCALP BOT</h1><p class="text-[10px] text-zinc-500">BINANCE FUTURES • LIVE</p></div>
-<div class="flex gap-2"><button id="startBtn" class="px-4 py-2 bg-green-600 rounded-xl text-sm font-bold">START</button><button id="stopBtn" class="px-4 py-2 bg-zinc-800 rounded-xl text-sm font-bold">STOP</button></div>
+<body class="p-2">
+<div class="max-w-[700px] mx-auto space-y-3">
+<div class="flex justify-between items-center glass rounded-2xl p-3 sticky top-2 z-50 backdrop-blur">
+<div><h1 class="font-black text-[15px]">⚡ ULTRA V4.1 + TRAIL</h1><p class="text-[9px] text-zinc-500">TRAIL ACT % • INSTANT PROFIT LOCK</p></div>
+<div class="flex gap-2"><button id="startBtn" class="px-5 py-3 bg-green-600 rounded-xl text-xs font-black pulse">START ULTRA</button><button id="stopBtn" class="px-4 py-3 bg-zinc-800 rounded-xl text-xs font-bold">STOP</button></div>
 </div>
 
 <div class="grid grid-cols-3 gap-2">
-<div class="glass rounded-2xl p-3"><p class="text-[10px] text-zinc-500">USDT BALANCE REAL</p><p id="bal" class="text-xl font-black mono">$0.00</p><p id="balFree" class="text-[10px] text-zinc-500">Free $0</p></div>
-<div class="glass rounded-2xl p-3"><p class="text-[10px] text-zinc-500">PNL TODAY REAL</p><p id="pnl" class="text-xl font-black mono profit">$0.00</p><p class="text-[10px] text-zinc-500"><span class="profit">WIN</span> / <span class="loss">LOSS</span></p></div>
-<div class="glass rounded-2xl p-3"><p class="text-[10px] text-zinc-500">WIN RATE</p><p id="winRate" class="text-xl font-black mono profit">0%</p><p class="text-[10px] text-zinc-500">trades</p></div>
+<div class="glass rounded-2xl p-3"><p class="text-[9px] text-zinc-500">USDT BALANCE</p><p id="bal" class="text-xl font-black mono">$0.00</p><p id="balFree" class="text-[10px] text-zinc-500">Free $0</p><p id="balStatus" class="text-[9px] text-yellow-500">connecting...</p></div>
+<div class="glass rounded-2xl p-3"><p class="text-[9px] text-zinc-500">TOTAL PROFIT + TRAIL</p><p id="totalProfit" class="text-xl font-black mono profit">+$0.00</p><p class="text-[10px] text-zinc-500"><span id="winCount" class="profit">0W</span> / <span id="lossCount" class="loss">0L</span> • <span id="tradeCount">0 trades</span></p></div>
+<div class="glass rounded-2xl p-3"><p class="text-[9px] text-zinc-500">TRAIL STATUS</p><p id="botStatus" class="text-[13px] font-black mono">STOPPED</p><p id="trailInfo" class="text-[10px] text-green-400">0 trailing</p><p id="turboTimer" class="text-[9px] text-orange-400">Turbo 45s</p></div>
 </div>
 
-<div class="glass rounded-[24px] p-5">
-<div class="flex justify-between items-center mb-5"><h2 class="font-bold">Bot Settings • REAL</h2><span class="px-3 py-1 rounded-full bg-zinc-800 text-[11px]">USDT 1 works</span></div>
+<div class="glass rounded-[24px] p-4">
+<div class="flex justify-between items-center mb-4"><h2 class="font-bold text-sm">⚡ Ultra Settings V4.1 • Trail Act %</h2><span id="notionalTop" class="px-3 py-1 rounded-full bg-yellow-400/10 text-yellow-400 text-[11px] border border-yellow-400/20">10x • $200</span></div>
 
-<div class="grid grid-cols-2 gap-3 mb-4">
-<div><label class="text-[11px] text-zinc-500">MARGIN / TRADE (USDT)</label><div class="relative mt-2"><input id="margin" inputmode="decimal" type="text" value="5" class="w-full bg-[#0a0a0b] border border-zinc-700 rounded-2xl px-4 py-4 text-lg mono outline-none focus:border-yellow-400"><span class="absolute right-4 top-4 text-zinc-500">$</span></div><p class="text-[11px] text-zinc-500 mt-2">USDT 1 unath trade karanna puluwan via notional = margin x leverage</p></div>
-<div><label class="text-[11px] text-zinc-500">MIN USDT</label><input id="minUsdt" inputmode="decimal" type="text" value="1" class="w-full bg-[#0a0a0b] border border-zinc-700 rounded-2xl px-4 py-4 text-lg mono mt-2 outline-none focus:border-yellow-400"></div>
+<div class="grid grid-cols-2 gap-3 mb-3">
+<div><label class="text-[10px] text-zinc-500">MARGIN / TRADE</label><input id="margin" type="text" value="20" class="w-full bg-[#0a0a0b] border border-zinc-700 rounded-2xl px-4 py-3.5 text-[16px] mono mt-1.5 outline-none focus:border-yellow-400"></div>
+<div><label class="text-[10px] text-zinc-500">LEVERAGE <span id="levLabel">10X</span></label><input id="leverage" type="range" min="5" max="50" value="10" class="w-full mt-5 accent-yellow-400 h-2"></div>
 </div>
 
-<div class="mb-6"><div class="flex justify-between"><label class="text-[11px] text-zinc-500">LEVERAGE <span id="levLabel">25X</span></label><span id="notional" class="text-[12px] text-yellow-400">25x • 125$ notional</span></div>
-<input id="leverage" type="range" min="1" max="125" value="25" class="w-full mt-4 accent-yellow-400 h-2"><div class="flex justify-between text-[11px] text-zinc-500 mt-1"><span>1x</span><span>25x</span><span>125x</span></div></div>
-
-<div class="grid grid-cols-3 gap-3 mb-6">
-<div><label class="text-[11px] text-zinc-500">TP %</label><input id="tp" inputmode="decimal" type="text" value="0.6" class="w-full bg-[#0a0a0b] border border-zinc-700 rounded-2xl px-4 py-4 text-lg mono mt-2 outline-none focus:border-green-500 text-green-400"></div>
-<div><label class="text-[11px] text-zinc-500">SL %</label><input id="sl" inputmode="decimal" type="text" value="0.8" class="w-full bg-[#0a0a0b] border border-zinc-700 rounded-2xl px-4 py-4 text-lg mono mt-2 outline-none focus:border-red-500 text-red-400"></div>
-<div><label class="text-[11px] text-zinc-500">MAX POS</label><input id="maxPos" inputmode="numeric" type="text" value="1" class="w-full bg-[#0a0a0b] border border-zinc-700 rounded-2xl px-4 py-4 text-lg mono mt-2 outline-none focus:border-yellow-400"></div>
+<div class="grid grid-cols-4 gap-2 mb-3">
+<div><label class="text-[10px] text-zinc-500">TP % ⚡</label><input id="tp" type="text" value="0.18" class="w-full bg-[#0a0a0b] border border-green-900 rounded-2xl px-3 py-3 text-[15px] mono mt-1 outline-none text-green-400"></div>
+<div><label class="text-[10px] text-zinc-500">SL %</label><input id="sl" type="text" value="0.6" class="w-full bg-[#0a0a0b] border border-red-900 rounded-2xl px-3 py-3 text-[15px] mono mt-1 outline-none text-red-400"></div>
+<div><label class="text-[10px] text-zinc-500">MAX POS</label><input id="maxPos" type="text" value="3" class="w-full bg-[#0a0a0b] border border-zinc-700 rounded-2xl px-3 py-3 text-[15px] mono mt-1 outline-none"></div>
+<div><label class="text-[10px] text-zinc-500">THRESHOLD %</label><input id="confidence" type="text" value="45" class="w-full bg-[#0a0a0b] border border-zinc-700 rounded-2xl px-3 py-3 text-[15px] mono mt-1 outline-none"></div>
 </div>
 
-<button id="saveBtn" class="w-full py-5 rounded-full bg-yellow-400 text-black font-black text-[14px]">SAVE SETTINGS • REAL BOT</button>
+<div class="bg-[#0f0f10] border border-green-900/40 rounded-2xl p-3 mb-3">
+<p class="text-[11px] font-bold text-green-400 mb-2">🔥 NEW: TRAILING PROFIT LOCK (Trail Act %)</p>
+<div class="grid grid-cols-3 gap-2">
+<div><label class="text-[10px] text-zinc-400">TRAIL ACT % 🟢</label><input id="trailAct" type="text" value="0.12" class="w-full bg-[#0a0a0b] border border-green-800 rounded-xl px-3 py-2.5 text-[14px] mono mt-1 outline-none text-green-300"><p class="text-[8px] text-zinc-500 mt-1">Profit eka me % ta awama trail on</p></div>
+<div><label class="text-[10px] text-zinc-400">TRAIL DIST % 📏</label><input id="trailDist" type="text" value="0.08" class="w-full bg-[#0a0a0b] border border-yellow-800 rounded-xl px-3 py-2.5 text-[14px] mono mt-1 outline-none text-yellow-300"><p class="text-[8px] text-zinc-500 mt-1">Peak eken me % adu unama close</p></div>
+<div class="flex flex-col justify-center"><label class="flex items-center gap-2 text-[11px] bg-green-950/50 px-3 py-2.5 rounded-xl border border-green-800"><input type="checkbox" id="trailEnabled" checked class="accent-green-500"> TRAIL ON</label><p class="text-[8px] text-zinc-500 mt-1 text-center">0.12% profit → trail → 0.08% retrace → close</p></div>
+</div>
+<p class="text-[9px] text-zinc-500 mt-2">Ex: Price 0.12% profit unama trail active, peak eken 0.08% adu unama auto close karala profit lock karanawa anith botla wage!</p>
 </div>
 
-<div class="glass rounded-2xl p-4"><h3 class="font-bold text-sm mb-2">OPEN POSITIONS (REAL)</h3><div id="pos" class="text-xs mono">No positions</div></div>
-<div class="glass rounded-2xl p-4"><h3 class="font-bold text-sm mb-2">TRADE HISTORY • WIN/LOSS REAL</h3><div id="hist" class="text-[11px] mono">No trades</div></div>
-
-<div class="glass rounded-2xl p-4 text-[11px]">GitHub → Railway: Variables tab eke BINANCE_API_KEY, BINANCE_API_SECRET, BINANCE_MODE add karanna. Code eke keys danna epa.</div>
+<div class="flex gap-2 mb-3">
+<label class="flex items-center gap-2 text-[11px] bg-zinc-900 px-3 py-2 rounded-xl"><input type="checkbox" id="turboCheck" checked class="accent-orange-500"> 🔥 TURBO 45s</label>
+<label class="flex items-center gap-2 text-[11px] bg-zinc-900 px-3 py-2 rounded-xl"><input type="checkbox" id="ultraCheck" checked class="accent-yellow-400"> ⚡ ULTRA 2.5s</label>
 </div>
+
+<button id="saveBtn" class="w-full py-4 rounded-full bg-yellow-400 text-black font-black text-[13px]">SAVE V4.1 ULTRA + TRAIL SETTINGS</button>
+
+<div class="grid grid-cols-3 gap-2 mt-3">
+<button id="instantBtn" class="py-3.5 rounded-2xl bg-gradient-to-r from-orange-500 to-yellow-400 text-black font-black text-xs">⚡ INSTANT TRADE NOW!</button>
+<button id="testLong" class="py-3.5 rounded-2xl bg-green-600 text-white font-bold text-xs">TEST LONG</button>
+<button id="testShort" class="py-3.5 rounded-2xl bg-red-600 text-white font-bold text-xs">TEST SHORT</button>
+</div>
+</div>
+
+<div class="glass rounded-2xl p-3 max-h-[220px] overflow-auto"><div class="flex justify-between items-center mb-2"><h3 class="font-bold text-xs">⚡ LIVE LOGS • TRAIL ACT?</h3><button id="clearLog" class="text-[10px] text-zinc-500 px-2 py-1 bg-zinc-800 rounded">clear</button></div><div id="logs" class="text-[11px] mono">V4.1 Trail ready... START karama logs...</div></div>
+
+<div class="grid grid-cols-1 gap-3">
+<div class="glass rounded-2xl p-3"><h3 class="font-bold text-xs mb-2">OPEN POSITIONS • TRAIL ACTIVE 🟢</h3><div id="pos" class="text-xs mono">No positions - START ultra</div></div>
+<div class="glass rounded-2xl p-3"><h3 class="font-bold text-xs mb-2">TRADE HISTORY • TRAIL PROFIT LOCK</h3><div id="hist" class="text-[11px] mono max-h-[200px] overflow-auto">No trades - Instant click</div></div>
+</div>
+
+<div class="glass rounded-2xl p-3"><h3 class="font-bold text-xs mb-2">📊 VOLATILE PAIRS + TRAIL MAP</h3><div id="marketTable" class="text-[10px] mono grid grid-cols-2 gap-1"></div><div id="trailMap" class="mt-2 text-[10px]"></div></div>
+</div>
+
 <script>
-function setupInput(id){
-  const el=document.getElementById(id);
-  el.addEventListener('focus',()=>{el.select();});
-  el.addEventListener('input',(e)=>{
-    let v=e.target.value;
-    if(v===''){updateNotional();return;}
-    if(!/^[0-9]*\.?[0-9]*$/.test(v)){e.target.value=v.slice(0,-1);return;}
-    updateNotional();
-  });
-}
-['margin','minUsdt','tp','sl','maxPos'].forEach(setupInput);
-const lev=document.getElementById('leverage');
-lev.addEventListener('input',()=>{
-  document.getElementById('levLabel').textContent=lev.value+'X';
-  updateNotional();
-});
+const el=id=>document.getElementById(id);
+function setup(id){const e=el(id); if(!e) return; e.addEventListener('focus',()=>e.select()); e.addEventListener('input',()=>{if(!/^[0-9]*\.?[0-9]*$/.test(e.value)&&e.value!==''){e.value=e.value.slice(0,-1);} updateNotional();});}
+['margin','tp','sl','maxPos','confidence','trailAct','trailDist'].forEach(setup);
+const lev=el('leverage');
+lev.addEventListener('input',()=>{el('levLabel').textContent=lev.value+'X'; updateNotional();});
 function updateNotional(){
-  const margin=parseFloat(document.getElementById('margin').value)||0;
-  const l=parseFloat(lev.value)||1;
-  document.getElementById('notional').textContent=l+'x • '+(margin*l)+'$ notional';
+  const m=parseFloat(el('margin').value)||0; const l=parseFloat(lev.value)||1;
+  el('notionalTop').textContent=l+'x • $'+(m*l)+' notional';
 }
-document.getElementById('saveBtn').onclick=()=>{
-  const data={margin:document.getElementById('margin').value,minUsdt:document.getElementById('minUsdt').value,leverage:lev.value,tp:document.getElementById('tp').value,sl:document.getElementById('sl').value,maxPos:document.getElementById('maxPos').value};
-  fetch('/api/config',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({leverage:data.leverage,marginUsdt:data.margin,tpPercent:data.tp,slPercent:data.sl,maxPositions:data.maxPos,minUsdt:data.minUsdt})}).then(()=>alert('Saved: '+JSON.stringify(data)));
+el('saveBtn').onclick=()=>{
+  const d={
+    margin:el('margin').value, leverage:lev.value, tp:el('tp').value, sl:el('sl').value, maxPos:el('maxPos').value, conf:el('confidence').value,
+    trailAct:el('trailAct').value, trailDist:el('trailDist').value, trailOn:el('trailEnabled').checked,
+    turbo:el('turboCheck').checked, ultra:el('ultraCheck').checked
+  };
+  fetch('/api/config',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+    leverage:d.leverage, marginUsdt:d.margin, tpPercent:d.tp, slPercent:d.sl, maxPositions:d.maxPos, minUsdt:1, confidenceThreshold:d.conf,
+    trailActPercent:d.trailAct, trailDistancePercent:d.trailDist, trailEnabled:d.trailOn,
+    turboMode:d.turbo, ultraMode:d.ultra
+  })}).then(()=>alert('V4.1 ULTRA+TRAIL Saved! Act:'+d.trailAct+'% Dist:'+d.trailDist+'%'));
 };
-function el(id){return document.getElementById(id)}
 const socket=io();
-socket.on('balance',b=>{el('bal').textContent='$'+(b.total||0).toFixed(2);el('balFree').textContent='Free $'+(b.free||0).toFixed(2);document.getElementById('pnl').textContent=(b.pnl>=0?'+':'')+'$'+(b.pnl||0).toFixed(2);});
-socket.on('positions',p=>{document.getElementById('pos').innerHTML=p.length?p.map(x=>`<div class="flex justify-between bg-[#0a0a0b] p-3 rounded-xl mt-2"><span>${x.symbol} ${x.side}</span><span class="${(x.unrealizedPnl||0)>=0?'profit':'loss'}">${(x.unrealizedPnl||0).toFixed(2)}</span></div>`).join(''):'No positions';});
-socket.on('newTrade',t=>{document.getElementById('hist').innerHTML=`<div class="bg-[#0a0a0b] p-3 rounded-xl mt-2 flex justify-between"><span>${t.pair} ${t.side} @${t.entryPrice.toFixed(4)}</span><span class="profit">${t.confidence}%</span></div>`+document.getElementById('hist').innerHTML;});
-document.getElementById('startBtn').onclick=()=>{fetch('/api/bot/start',{method:'POST'});document.getElementById('startBtn').textContent='RUNNING';};
-document.getElementById('stopBtn').onclick=()=>{fetch('/api/bot/stop',{method:'POST'});document.getElementById('startBtn').textContent='START';};
+socket.on('balance',b=>{
+  el('bal').textContent='$'+(b.total||0).toFixed(2);
+  el('balFree').textContent='Free $'+(b.free||0).toFixed(2);
+  el('balStatus').textContent=b.status||'connected';
+  if(b.totalProfit!==undefined){ el('totalProfit').textContent=(b.totalProfit>=0?'+':'')+'$'+b.totalProfit.toFixed(3); el('winCount').textContent=b.winCount+'W'; el('lossCount').textContent=b.lossCount+'L'; el('tradeCount').textContent=(b.totalTrades||0)+' trades'; }
+});
+socket.on('stats',s=>{
+  if(s.totalProfit!==undefined){ el('totalProfit').textContent=(s.totalProfit>=0?'+':'')+'$'+s.totalProfit.toFixed(3); el('winCount').textContent=s.winCount+'W'; el('lossCount').textContent=s.lossCount+'L'; }
+  el('turboTimer').textContent=s.lastTradeAgo?`Turbo ${Math.max(0,45-s.lastTradeAgo)}s • Last ${s.lastTradeAgo}s`:'Turbo 45s';
+  el('trailInfo').textContent=(s.trailingCount||0)+' trailing active';
+});
+socket.on('positions',p=>{
+  el('pos').innerHTML=p.length?p.map(x=>{
+    const tr=x.trailing;
+    const trailHtml = tr ? `<div class="text-[9px] mt-1 ${tr.active?'text-green-400':'text-zinc-500'}">${tr.active ? `🟢 TRAIL ON Peak ${ (tr.profitPeak||0).toFixed(3)}% Stop ${tr.stopPrice? tr.stopPrice.toFixed(4):''}` : `Trail waiting Act ${x.trailing? '':'0.12%'} `}</div>` : '';
+    const borderClass = tr && tr.active ? 'trail-active' : ( (x.unrealizedPnl||0)>=0?'border-green-900/50':'border-red-900/50');
+    return `<div class="flex flex-col bg-[#0a0a0b] p-2.5 rounded-xl mt-2 border ${borderClass}"><div class="flex justify-between"><span>${x.symbol} ${x.side} ${x.leverage||''}x</span><span class="${(x.unrealizedPnl||0)>=0?'profit':'loss'}">$${(x.unrealizedPnl||0).toFixed(3)} (${(x.percentage||0).toFixed(3)}%)</span></div>${trailHtml}</div>`;
+  }).join(''):'No positions - START ultra';
+});
+socket.on('trailing',map=>{
+  const keys=Object.keys(map);
+  if(keys.length===0){ el('trailMap').innerHTML=''; return; }
+  el('trailMap').innerHTML='<div class="mt-2 p-2 bg-green-950/20 rounded-xl border border-green-800/30"><b class="text-green-400">🟢 TRAILING ACTIVE:</b> '+keys.map(k=>{const t=map[k]; return `${k} ${t.side} Peak ${ (t.profitPeak||0).toFixed(3)}% Stop ${t.stopPrice? t.stopPrice.toFixed(3):''} ${t.active?'ACTIVE':''}`;}).join(' | ')+'</div>';
+});
+socket.on('newTrade',t=>{
+  el('hist').innerHTML=`<div class="bg-[#0a0a0b] p-2.5 rounded-xl mt-2 flex justify-between border border-yellow-900/20"><span>${t.pair} <b class="${t.side==='LONG'?'profit':'loss'}">${t.side}</b> @${t.entryPrice.toFixed(2)}</span><span class="text-yellow-400">${t.confidence}% ${t.turbo?'🔥':''}</span></div>`+el('hist').innerHTML;
+});
+socket.on('tradeHistory',h=>{
+  if(h.length>0) el('hist').innerHTML=h.slice(0,25).map(t=>`<div class="bg-[#0a0a0b] p-2 rounded-xl mt-1.5 flex justify-between text-[10px]"><span>${t.pair} ${t.side} @${t.entryPrice.toFixed(1)} → ${t.exitPrice? t.exitPrice.toFixed(1):'OPEN'} ${t.status? '('+t.status+')':''}</span><span class="${(t.profit||0)>=0?'profit':'loss'}">${t.profit!==undefined?'$'+t.profit.toFixed(3):t.confidence+'%'}</span></div>`).join('');
+});
+socket.on('marketData',d=>{
+  const vals=Object.values(d).slice(0,12);
+  el('marketTable').innerHTML=vals.map(v=>`<div class="bg-[#0a0a0b] p-2 rounded-lg flex justify-between ${v.signal!=='HOLD'?'border border-yellow-500/30':''}"><span>${v.pair.replace('/USDT','')}</span><span class="${v.signal==='LONG'?'profit':(v.signal==='SHORT'?'loss':'text-zinc-500')}">${v.signal} ${v.confidence}%</span><span class="text-zinc-500">${v.mom1!==undefined? v.mom1.toFixed(2)+'%':''}</span></div>`).join('');
+});
+socket.on('log',l=>{
+  const cls=l.type||'info';
+  el('logs').innerHTML=`<div class="log ${cls}"><span class="text-zinc-600">${l.time}</span> ${l.msg}</div>`+el('logs').innerHTML;
+});
+socket.on('scanLogs',logs=>{ if(logs && logs.length) el('logs').innerHTML=logs.slice(0,35).map(l=>`<div class="log ${l.type||''}"><span class="text-zinc-600">${l.time}</span> ${l.msg}</div>`).join(''); });
+socket.on('botStatus',s=>{ el('botStatus').textContent=s; el('botStatus').className='text-[13px] font-black mono '+(s==='RUNNING'?'profit pulse':'text-zinc-400'); el('startBtn').textContent=s==='RUNNING'?'RUNNING ⚡':'START ULTRA'; });
+socket.on('error',e=>{ el('logs').innerHTML=`<div class="log error">${e}</div>`+el('logs').innerHTML; });
+el('startBtn').onclick=()=>{fetch('/api/bot/start',{method:'POST'});};
+el('stopBtn').onclick=()=>{fetch('/api/bot/stop',{method:'POST'});};
+el('instantBtn').onclick=()=>{ el('instantBtn').textContent='TRADING...'; fetch('/api/instant-trade',{method:'POST'}).then(r=>r.json()).then(j=>{ el('instantBtn').textContent='⚡ INSTANT TRADE NOW!'; alert('Instant: '+(j.picked? j.picked.pair+' '+j.picked.side:'BTC LONG'));}).catch(()=>{el('instantBtn').textContent='⚡ INSTANT TRADE NOW!';}); };
+el('testLong').onclick=()=>{fetch('/api/test-trade',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({pair:'BTC/USDT',side:'LONG'})});};
+el('testShort').onclick=()=>{fetch('/api/test-trade',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({pair:'BTC/USDT',side:'SHORT'})});};
+el('clearLog').onclick=()=>el('logs').innerHTML='Cleared - waiting V4.1 trail...';
 updateNotional();
+fetch('/api/config').then(r=>r.json()).then(d=>{ if(d.logs) el('logs').innerHTML=d.logs.slice(0,35).map(l=>`<div class="log ${l.type||''}"><span class="text-zinc-600">${l.time}</span> ${l.msg}</div>`).join(''); if(d.config){ el('margin').value=d.config.marginUsdt; lev.value=d.config.leverage; el('tp').value=d.config.tpPercent; el('sl').value=d.config.slPercent; el('maxPos').value=d.config.maxPositions; el('confidence').value=d.config.confidenceThreshold; el('trailAct').value=d.config.trailActPercent; el('trailDist').value=d.config.trailDistancePercent; el('trailEnabled').checked=d.config.trailEnabled; updateNotional(); }});
 </script>
 <script>(function(){var loc=location.href.replace(/#.*$/,"");var ATTR_NAMES=["data-product-id","data-productid","data-product_id","product-id","productid","product_id","data-source-entity-id","source-entity-id","source_entity_id","data-product","data-metadata","data-meta"];var DATASET_KEYS=["productId","productid","product_id","sourceEntityId","sourceentityid","source_entity_id","product","metadata","meta"];function readProductId(value){if(typeof value!=="string"||value.length===0)return null;if(/^[0-9]{6,}$/.test(value))return value;var match=value.match(/(?:product(?:_|-)?id|source(?:_|-)?entity(?:_|-)?id)["'=:\s]+([0-9]{6,})/i);return match?match[1]:null}function extractProductId(start){for(var node=start;node&&node!==document.body;node=node.parentElement){for(var i=0;i<ATTR_NAMES.length;i++){var attrValue=node.getAttribute&&node.getAttribute(ATTR_NAMES[i]);var attrProductId=readProductId(attrValue);if(attrProductId)return attrProductId}var dataset=node.dataset||null;if(dataset){for(var j=0;j<DATASET_KEYS.length;j++){var dataValue=dataset[DATASET_KEYS[j]];var dataProductId=readProductId(dataValue);if(dataProductId)return dataProductId}}}return null}function isInlineMediaSlotElement(node){return !!(node&&node.getAttribute&&node.getAttribute("data-clippy-inline-media-slot")!==null)}function findInlineMediaSlot(start){for(var node=start;node&&node!==document.body;node=node.parentElement){if(isInlineMediaSlotElement(node))return node}return null}function readInlineMediaUrl(node){if(!node)return null;return node.getAttribute&&((node.getAttribute("data-clippy-inline-media-url")||node.getAttribute("data-url")||node.getAttribute("data_url")))||node.href||null}function stripHash(url){return String(url).replace(/#.*$/,"")}function urlsMatch(a,b){if(!a||!b)return false;try{return stripHash(new URL(a,loc).href)===stripHash(new URL(b,loc).href)}catch(_){return stripHash(a)===stripHash(b)}}function isFirstPartyReelUrl(value){try{var url=new URL(value,loc);if(url.protocol!=="https:")return false;var host=url.hostname.toLowerCase();var supported=host==="instagram.com"||host.endsWith(".instagram.com")||host==="facebook.com"||host.endsWith(".facebook.com");return supported&&/\/reels?\//i.test(url.pathname)}catch(_){return false}}function isInlineMediaUrlClick(node,href){var slot=findInlineMediaSlot(node);if(!slot)return false;var slotUrl=readInlineMediaUrl(slot);if(slotUrl)return urlsMatch(href,slotUrl);return isFirstPartyReelUrl(href)}function findDataHref(start){for(var node=start;node&&node!==document.body;node=node.parentElement){if(node.getAttribute){var href=node.getAttribute("data-href")||node.getAttribute("data-url");if(href)return{href:href,node:node}}}return null}var nativeOpen=window.open;window.open=function(url){if(parent!==window&&typeof url==="string"&&/^https?:\/\//.test(url)){parent.postMessage({type:"ecto:usercontent-link-click",href:url},"*");return null}return nativeOpen?nativeOpen.apply(window,arguments):null};document.addEventListener("click",function(e){var target=e.target instanceof Element?e.target:null;if(!target)return;if(parent===window)return;var a=target.closest?target.closest("a[href]"):null;if(a&&a.href&&/^https?:\/\//.test(a.href)&&a.href.replace(/#.*$/,"")!==loc){if(isInlineMediaUrlClick(a,a.href))return;var productId=extractProductId(target)||extractProductId(a);if(productId){e.preventDefault();parent.postMessage({type:"ecto-artifact-link-click",productId:productId},"*");return}e.preventDefault();parent.postMessage({type:"ecto:usercontent-link-click",href:a.href},"*");return}var dataHref=findDataHref(target);if(dataHref&&/^https?:\/\//.test(dataHref.href)&&dataHref.href.replace(/#.*$/,"")!==loc){if(isInlineMediaUrlClick(dataHref.node,dataHref.href))return;e.preventDefault();parent.postMessage({type:"ecto:usercontent-link-click",href:dataHref.href},"*")}},true)})();</script><script>(function(){var FOCUS_TYPE="ecto:artifact-focus-request";var CLOSE_TYPE="ecto:artifact-close-request";function focusArtifactDocument(){var body=document.body;if(!body)return;try{window.focus();}catch(e){}if(!body.hasAttribute("tabindex"))body.setAttribute("tabindex","-1");try{body.focus({preventScroll:true});}catch(e){try{body.focus();}catch(e2){}}}window.addEventListener("message",function(event){if(event.source!==window.parent)return;var data=event.data;if(!data||typeof data!=="object"||data.type!==FOCUS_TYPE)return;if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",focusArtifactDocument,{once:true});return;}focusArtifactDocument();});window.addEventListener("keydown",function(event){if(event.key!=="Escape")return;window.setTimeout(function(){if(event.defaultPrevented)return;window.parent.postMessage({type:CLOSE_TYPE},"*");},0);});})();</script></body></html>
