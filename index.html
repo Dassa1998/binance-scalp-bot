@@ -21,7 +21,7 @@
   font-family: "Optimistic Mono", ui-monospace, monospace;
 }
 </style><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
-<title>ULTRA SCALP V4.1 - Trail Act %</title>
+<title>ULTRA V4.2 FIXED - PNL LIVE</title>
 <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
 <script src="https://cdn.tailwindcss.com"></script>
 <style>
@@ -30,7 +30,7 @@ body{background:#050507;color:#e5e7eb;font-family:Inter,sans-serif}
 .mono{font-family:monospace}
 .profit{color:#22c55e}.loss{color:#ef4444}
 .log{font-size:11px; font-family:monospace; border-bottom:1px solid #1f1f23; padding:5px 0}
-.log.trade{color:#facc15} .log.signal{color:#38bdf8} .log.profit{color:#22c55e; font-weight:bold} .log.error{color:#ef4444} .log.turbo{color:#f97316; font-weight:bold; background:#1a1207; padding:6px; border-radius:8px} .log.success{color:#22c55e}
+.log.trade{color:#facc15} .log.signal{color:#38bdf8} .log.profit{color:#22c55e; font-weight:bold} .log.error{color:#ef4444} .log.turbo{color:#f97316; font-weight:bold; background:#1a1207; padding:6px; border-radius:8px} .log.success{color:#22c55e} .log.warn{color:#eab308}
 .pulse{animation:pulse 1.5s infinite} @keyframes pulse{0%,100%{opacity:1} 50%{opacity:.5}}
 .trail-active{background:linear-gradient(90deg, #22c55e20, #facc1520); border:1px solid #22c55e50}
 </style>
@@ -38,63 +38,73 @@ body{background:#050507;color:#e5e7eb;font-family:Inter,sans-serif}
 <body class="p-2">
 <div class="max-w-[700px] mx-auto space-y-3">
 <div class="flex justify-between items-center glass rounded-2xl p-3 sticky top-2 z-50 backdrop-blur">
-<div><h1 class="font-black text-[15px]">⚡ ULTRA V4.1 + TRAIL</h1><p class="text-[9px] text-zinc-500">TRAIL ACT % • INSTANT PROFIT LOCK</p></div>
+<div><h1 class="font-black text-[14px]">⚡ ULTRA V4.2 FIXED PNL</h1><p class="text-[9px] text-zinc-500">PNL • WIN/LOSS LIVE • ERROR FIXED</p></div>
 <div class="flex gap-2"><button id="startBtn" class="px-5 py-3 bg-green-600 rounded-xl text-xs font-black pulse">START ULTRA</button><button id="stopBtn" class="px-4 py-3 bg-zinc-800 rounded-xl text-xs font-bold">STOP</button></div>
 </div>
 
 <div class="grid grid-cols-3 gap-2">
-<div class="glass rounded-2xl p-3"><p class="text-[9px] text-zinc-500">USDT BALANCE</p><p id="bal" class="text-xl font-black mono">$0.00</p><p id="balFree" class="text-[10px] text-zinc-500">Free $0</p><p id="balStatus" class="text-[9px] text-yellow-500">connecting...</p></div>
-<div class="glass rounded-2xl p-3"><p class="text-[9px] text-zinc-500">TOTAL PROFIT + TRAIL</p><p id="totalProfit" class="text-xl font-black mono profit">+$0.00</p><p class="text-[10px] text-zinc-500"><span id="winCount" class="profit">0W</span> / <span id="lossCount" class="loss">0L</span> • <span id="tradeCount">0 trades</span></p></div>
-<div class="glass rounded-2xl p-3"><p class="text-[9px] text-zinc-500">TRAIL STATUS</p><p id="botStatus" class="text-[13px] font-black mono">STOPPED</p><p id="trailInfo" class="text-[10px] text-green-400">0 trailing</p><p id="turboTimer" class="text-[9px] text-orange-400">Turbo 45s</p></div>
+<div class="glass rounded-2xl p-3"><p class="text-[9px] text-zinc-500">USDT BALANCE REAL</p><p id="bal" class="text-xl font-black mono">$0.00</p><p id="balFree" class="text-[10px] text-zinc-500">Free $0</p><p id="balStatus" class="text-[9px] text-green-400">connected</p><p id="unrealPnl" class="text-[10px] mono mt-1">Unreal PNL: $0.00</p></div>
+<div class="glass rounded-2xl p-3 border border-green-900/30"><p class="text-[9px] text-zinc-500">TOTAL PROFIT REAL • LIVE</p><p id="totalProfit" class="text-xl font-black mono profit">+$0.000</p><p id="todayProfit" class="text-[10px] mono profit">Today: +$0.000</p><p class="text-[10px] text-zinc-500 mt-1"><span id="winCount" class="profit font-bold">0W</span> / <span id="lossCount" class="loss font-bold">0L</span> • <span id="winRate" class="text-yellow-400">0% WR</span></p><p id="tradeCount" class="text-[9px] text-zinc-500">0 trades closed</p></div>
+<div class="glass rounded-2xl p-3"><p class="text-[9px] text-zinc-500">LIVE STATUS</p><p id="botStatus" class="text-[13px] font-black mono">STOPPED</p><p id="trailInfo" class="text-[10px] text-green-400">0 trailing</p><p id="turboTimer" class="text-[9px] text-orange-400">Turbo 45s</p><p id="lastTrade" class="text-[8px] text-zinc-500">Last: never</p></div>
+</div>
+
+<div class="glass rounded-2xl p-3 border border-yellow-900/20">
+<h3 class="font-bold text-xs mb-2 flex justify-between"><span>📊 REAL PNL DETAILS • LIVE UPDATE</span><button id="resetStats" class="text-[9px] bg-zinc-800 px-2 py-1 rounded">Reset</button></h3>
+<div class="grid grid-cols-4 gap-2 text-[10px]">
+<div class="bg-[#0a0a0b] p-2 rounded-xl"><p class="text-zinc-500">UNREALIZED PNL</p><p id="detailUnreal" class="mono font-bold text-[13px]">$0.00</p></div>
+<div class="bg-[#0a0a0b] p-2 rounded-xl"><p class="text-zinc-500">REALIZED TODAY</p><p id="detailToday" class="mono font-bold text-[13px] profit">$0.00</p></div>
+<div class="bg-[#0a0a0b] p-2 rounded-xl"><p class="text-zinc-500">TOTAL CLOSED</p><p id="detailTotal" class="mono font-bold text-[13px] profit">$0.00</p></div>
+<div class="bg-[#0a0a0b] p-2 rounded-xl"><p class="text-zinc-500">WIN RATE</p><p id="detailWinRate" class="mono font-bold text-[13px] text-yellow-400">0%</p><p id="detailWL" class="text-[9px]">0W 0L</p></div>
+</div>
+<div class="mt-2 text-[9px] text-zinc-500">Unrealized = open positions live • Today = closed today • Total = all time closed profit • Win Rate live update</div>
 </div>
 
 <div class="glass rounded-[24px] p-4">
-<div class="flex justify-between items-center mb-4"><h2 class="font-bold text-sm">⚡ Ultra Settings V4.1 • Trail Act %</h2><span id="notionalTop" class="px-3 py-1 rounded-full bg-yellow-400/10 text-yellow-400 text-[11px] border border-yellow-400/20">10x • $200</span></div>
+<div class="flex justify-between items-center mb-4"><h2 class="font-bold text-sm">⚡ Settings V4.2 • Trail Act %</h2><span id="notionalTop" class="px-3 py-1 rounded-full bg-yellow-400/10 text-yellow-400 text-[11px] border border-yellow-400/20">10x • $100</span></div>
 
 <div class="grid grid-cols-2 gap-3 mb-3">
-<div><label class="text-[10px] text-zinc-500">MARGIN / TRADE</label><input id="margin" type="text" value="20" class="w-full bg-[#0a0a0b] border border-zinc-700 rounded-2xl px-4 py-3.5 text-[16px] mono mt-1.5 outline-none focus:border-yellow-400"></div>
+<div><label class="text-[10px] text-zinc-500">MARGIN / TRADE</label><input id="margin" type="text" value="10" class="w-full bg-[#0a0a0b] border border-zinc-700 rounded-2xl px-4 py-3.5 text-[16px] mono mt-1.5 outline-none focus:border-yellow-400"></div>
 <div><label class="text-[10px] text-zinc-500">LEVERAGE <span id="levLabel">10X</span></label><input id="leverage" type="range" min="5" max="50" value="10" class="w-full mt-5 accent-yellow-400 h-2"></div>
 </div>
 
 <div class="grid grid-cols-4 gap-2 mb-3">
-<div><label class="text-[10px] text-zinc-500">TP % ⚡</label><input id="tp" type="text" value="0.18" class="w-full bg-[#0a0a0b] border border-green-900 rounded-2xl px-3 py-3 text-[15px] mono mt-1 outline-none text-green-400"></div>
-<div><label class="text-[10px] text-zinc-500">SL %</label><input id="sl" type="text" value="0.6" class="w-full bg-[#0a0a0b] border border-red-900 rounded-2xl px-3 py-3 text-[15px] mono mt-1 outline-none text-red-400"></div>
-<div><label class="text-[10px] text-zinc-500">MAX POS</label><input id="maxPos" type="text" value="3" class="w-full bg-[#0a0a0b] border border-zinc-700 rounded-2xl px-3 py-3 text-[15px] mono mt-1 outline-none"></div>
-<div><label class="text-[10px] text-zinc-500">THRESHOLD %</label><input id="confidence" type="text" value="45" class="w-full bg-[#0a0a0b] border border-zinc-700 rounded-2xl px-3 py-3 text-[15px] mono mt-1 outline-none"></div>
+<div><label class="text-[10px] text-zinc-500">TP %</label><input id="tp" type="text" value="0.2" class="w-full bg-[#0a0a0b] border border-green-900 rounded-2xl px-3 py-3 text-[15px] mono mt-1 outline-none text-green-400"></div>
+<div><label class="text-[10px] text-zinc-500">SL %</label><input id="sl" type="text" value="1" class="w-full bg-[#0a0a0b] border border-red-900 rounded-2xl px-3 py-3 text-[15px] mono mt-1 outline-none text-red-400"></div>
+<div><label class="text-[10px] text-zinc-500">MAX POS</label><input id="maxPos" type="text" value="2" class="w-full bg-[#0a0a0b] border border-zinc-700 rounded-2xl px-3 py-3 text-[15px] mono mt-1 outline-none"></div>
+<div><label class="text-[10px] text-zinc-500">THRESHOLD</label><input id="confidence" type="text" value="45" class="w-full bg-[#0a0a0b] border border-zinc-700 rounded-2xl px-3 py-3 text-[15px] mono mt-1 outline-none"></div>
 </div>
 
 <div class="bg-[#0f0f10] border border-green-900/40 rounded-2xl p-3 mb-3">
-<p class="text-[11px] font-bold text-green-400 mb-2">🔥 NEW: TRAILING PROFIT LOCK (Trail Act %)</p>
+<p class="text-[11px] font-bold text-green-400 mb-2">🔥 TRAILING PROFIT LOCK</p>
 <div class="grid grid-cols-3 gap-2">
-<div><label class="text-[10px] text-zinc-400">TRAIL ACT % 🟢</label><input id="trailAct" type="text" value="0.12" class="w-full bg-[#0a0a0b] border border-green-800 rounded-xl px-3 py-2.5 text-[14px] mono mt-1 outline-none text-green-300"><p class="text-[8px] text-zinc-500 mt-1">Profit eka me % ta awama trail on</p></div>
-<div><label class="text-[10px] text-zinc-400">TRAIL DIST % 📏</label><input id="trailDist" type="text" value="0.08" class="w-full bg-[#0a0a0b] border border-yellow-800 rounded-xl px-3 py-2.5 text-[14px] mono mt-1 outline-none text-yellow-300"><p class="text-[8px] text-zinc-500 mt-1">Peak eken me % adu unama close</p></div>
-<div class="flex flex-col justify-center"><label class="flex items-center gap-2 text-[11px] bg-green-950/50 px-3 py-2.5 rounded-xl border border-green-800"><input type="checkbox" id="trailEnabled" checked class="accent-green-500"> TRAIL ON</label><p class="text-[8px] text-zinc-500 mt-1 text-center">0.12% profit → trail → 0.08% retrace → close</p></div>
+<div><label class="text-[10px] text-zinc-400">TRAIL ACT %</label><input id="trailAct" type="text" value="0.1" class="w-full bg-[#0a0a0b] border border-green-800 rounded-xl px-3 py-2.5 text-[14px] mono mt-1 outline-none text-green-300"></div>
+<div><label class="text-[10px] text-zinc-400">TRAIL DIST %</label><input id="trailDist" type="text" value="0.08" class="w-full bg-[#0a0a0b] border border-yellow-800 rounded-xl px-3 py-2.5 text-[14px] mono mt-1 outline-none text-yellow-300"></div>
+<div class="flex flex-col justify-center"><label class="flex items-center gap-2 text-[11px] bg-green-950/50 px-3 py-2.5 rounded-xl border border-green-800"><input type="checkbox" id="trailEnabled" checked class="accent-green-500"> TRAIL ON</label></div>
 </div>
-<p class="text-[9px] text-zinc-500 mt-2">Ex: Price 0.12% profit unama trail active, peak eken 0.08% adu unama auto close karala profit lock karanawa anith botla wage!</p>
 </div>
 
 <div class="flex gap-2 mb-3">
-<label class="flex items-center gap-2 text-[11px] bg-zinc-900 px-3 py-2 rounded-xl"><input type="checkbox" id="turboCheck" checked class="accent-orange-500"> 🔥 TURBO 45s</label>
-<label class="flex items-center gap-2 text-[11px] bg-zinc-900 px-3 py-2 rounded-xl"><input type="checkbox" id="ultraCheck" checked class="accent-yellow-400"> ⚡ ULTRA 2.5s</label>
+<label class="flex items-center gap-2 text-[11px] bg-zinc-900 px-3 py-2 rounded-xl"><input type="checkbox" id="turboCheck" checked class="accent-orange-500"> 🔥 TURBO</label>
+<label class="flex items-center gap-2 text-[11px] bg-zinc-900 px-3 py-2 rounded-xl"><input type="checkbox" id="ultraCheck" checked class="accent-yellow-400"> ⚡ ULTRA</label>
 </div>
 
-<button id="saveBtn" class="w-full py-4 rounded-full bg-yellow-400 text-black font-black text-[13px]">SAVE V4.1 ULTRA + TRAIL SETTINGS</button>
+<button id="saveBtn" class="w-full py-4 rounded-full bg-yellow-400 text-black font-black text-[13px]">SAVE V4.2 FIXED</button>
 
 <div class="grid grid-cols-3 gap-2 mt-3">
-<button id="instantBtn" class="py-3.5 rounded-2xl bg-gradient-to-r from-orange-500 to-yellow-400 text-black font-black text-xs">⚡ INSTANT TRADE NOW!</button>
+<button id="instantBtn" class="py-3.5 rounded-2xl bg-gradient-to-r from-orange-500 to-yellow-400 text-black font-black text-xs">⚡ INSTANT TRADE!</button>
 <button id="testLong" class="py-3.5 rounded-2xl bg-green-600 text-white font-bold text-xs">TEST LONG</button>
 <button id="testShort" class="py-3.5 rounded-2xl bg-red-600 text-white font-bold text-xs">TEST SHORT</button>
 </div>
 </div>
 
-<div class="glass rounded-2xl p-3 max-h-[220px] overflow-auto"><div class="flex justify-between items-center mb-2"><h3 class="font-bold text-xs">⚡ LIVE LOGS • TRAIL ACT?</h3><button id="clearLog" class="text-[10px] text-zinc-500 px-2 py-1 bg-zinc-800 rounded">clear</button></div><div id="logs" class="text-[11px] mono">V4.1 Trail ready... START karama logs...</div></div>
+<div class="glass rounded-2xl p-3 max-h-[200px] overflow-auto"><div class="flex justify-between items-center mb-2"><h3 class="font-bold text-xs">⚡ LIVE LOGS - Error Fixed</h3><button id="clearLog" class="text-[10px] text-zinc-500 px-2 py-1 bg-zinc-800 rounded">clear</button></div><div id="logs" class="text-[11px] mono">V4.2 FIXED - PNL live, positionRisk error fixed...</div></div>
 
 <div class="grid grid-cols-1 gap-3">
-<div class="glass rounded-2xl p-3"><h3 class="font-bold text-xs mb-2">OPEN POSITIONS • TRAIL ACTIVE 🟢</h3><div id="pos" class="text-xs mono">No positions - START ultra</div></div>
-<div class="glass rounded-2xl p-3"><h3 class="font-bold text-xs mb-2">TRADE HISTORY • TRAIL PROFIT LOCK</h3><div id="hist" class="text-[11px] mono max-h-[200px] overflow-auto">No trades - Instant click</div></div>
+<div class="glass rounded-2xl p-3"><h3 class="font-bold text-xs mb-2">OPEN POSITIONS • LIVE PNL</h3><div id="pos" class="text-xs mono">No positions - START to open</div></div>
+<div class="glass rounded-2xl p-3"><h3 class="font-bold text-xs mb-2">TRADE HISTORY • REAL PROFIT LIVE <span id="histProfit" class="profit">+$0.00</span></h3><div id="hist" class="text-[11px] mono max-h-[250px] overflow-auto">No trades - Instant click karanna</div></div>
 </div>
 
-<div class="glass rounded-2xl p-3"><h3 class="font-bold text-xs mb-2">📊 VOLATILE PAIRS + TRAIL MAP</h3><div id="marketTable" class="text-[10px] mono grid grid-cols-2 gap-1"></div><div id="trailMap" class="mt-2 text-[10px]"></div></div>
+<div class="glass rounded-2xl p-3"><h3 class="font-bold text-xs mb-2">📊 VOLATILE PAIRS LIVE</h3><div id="marketTable" class="text-[10px] mono grid grid-cols-2 gap-1"></div><div id="trailMap" class="mt-2 text-[10px]"></div></div>
 </div>
 
 <script>
@@ -103,52 +113,94 @@ function setup(id){const e=el(id); if(!e) return; e.addEventListener('focus',()=
 ['margin','tp','sl','maxPos','confidence','trailAct','trailDist'].forEach(setup);
 const lev=el('leverage');
 lev.addEventListener('input',()=>{el('levLabel').textContent=lev.value+'X'; updateNotional();});
-function updateNotional(){
-  const m=parseFloat(el('margin').value)||0; const l=parseFloat(lev.value)||1;
-  el('notionalTop').textContent=l+'x • $'+(m*l)+' notional';
-}
+function updateNotional(){const m=parseFloat(el('margin').value)||0; const l=parseFloat(lev.value)||1; el('notionalTop').textContent=l+'x • $'+(m*l)+' notional';}
 el('saveBtn').onclick=()=>{
-  const d={
-    margin:el('margin').value, leverage:lev.value, tp:el('tp').value, sl:el('sl').value, maxPos:el('maxPos').value, conf:el('confidence').value,
-    trailAct:el('trailAct').value, trailDist:el('trailDist').value, trailOn:el('trailEnabled').checked,
-    turbo:el('turboCheck').checked, ultra:el('ultraCheck').checked
-  };
-  fetch('/api/config',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
-    leverage:d.leverage, marginUsdt:d.margin, tpPercent:d.tp, slPercent:d.sl, maxPositions:d.maxPos, minUsdt:1, confidenceThreshold:d.conf,
-    trailActPercent:d.trailAct, trailDistancePercent:d.trailDist, trailEnabled:d.trailOn,
-    turboMode:d.turbo, ultraMode:d.ultra
-  })}).then(()=>alert('V4.1 ULTRA+TRAIL Saved! Act:'+d.trailAct+'% Dist:'+d.trailDist+'%'));
+  const d={margin:el('margin').value, leverage:lev.value, tp:el('tp').value, sl:el('sl').value, maxPos:el('maxPos').value, conf:el('confidence').value, trailAct:el('trailAct').value, trailDist:el('trailDist').value, trailOn:el('trailEnabled').checked, turbo:el('turboCheck').checked, ultra:el('ultraCheck').checked};
+  fetch('/api/config',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({leverage:d.leverage, marginUsdt:d.margin, tpPercent:d.tp, slPercent:d.sl, maxPositions:d.maxPos, minUsdt:1, confidenceThreshold:d.conf, trailActPercent:d.trailAct, trailDistancePercent:d.trailDist, trailEnabled:d.trailOn, turboMode:d.turbo, ultraMode:d.ultra})}).then(()=>alert('V4.2 FIXED Saved!'));
 };
 const socket=io();
 socket.on('balance',b=>{
   el('bal').textContent='$'+(b.total||0).toFixed(2);
   el('balFree').textContent='Free $'+(b.free||0).toFixed(2);
-  el('balStatus').textContent=b.status||'connected';
-  if(b.totalProfit!==undefined){ el('totalProfit').textContent=(b.totalProfit>=0?'+':'')+'$'+b.totalProfit.toFixed(3); el('winCount').textContent=b.winCount+'W'; el('lossCount').textContent=b.lossCount+'L'; el('tradeCount').textContent=(b.totalTrades||0)+' trades'; }
+  // Fix: don't show long error, only show connected
+  el('balStatus').textContent= (b.status && b.status.includes('connected')) ? 'connected' : (b.status||'connected');
+  el('balStatus').className='text-[9px] '+(b.status==='connected'?'text-green-400':'text-yellow-500');
+  el('unrealPnl').textContent='Unreal PNL: '+(b.unrealizedPnl>=0?'+':'')+'$'+(b.unrealizedPnl||0).toFixed(3);
+  el('unrealPnl').className='text-[10px] mono mt-1 '+(b.unrealizedPnl>=0?'profit':'loss');
+  
+  // Live PNL details
+  if(b.totalProfit!==undefined){
+    const sign = b.totalProfit>=0?'+':'';
+    el('totalProfit').textContent=sign+'$'+b.totalProfit.toFixed(3);
+    el('totalProfit').className='text-xl font-black mono '+(b.totalProfit>=0?'profit':'loss');
+    el('detailTotal').textContent=sign+'$'+b.totalProfit.toFixed(3);
+    el('detailTotal').className='mono font-bold text-[13px] '+(b.totalProfit>=0?'profit':'loss');
+    el('histProfit').textContent=sign+'$'+b.totalProfit.toFixed(3);
+    
+    el('winCount').textContent=b.winCount+'W';
+    el('lossCount').textContent=b.lossCount+'L';
+    el('detailWL').textContent=b.winCount+'W '+b.lossCount+'L';
+    el('tradeCount').textContent=(b.totalTrades||0)+' trades closed';
+    el('winRate').textContent=(b.winRate||0)+'% WR';
+    el('detailWinRate').textContent=(b.winRate||0)+'%';
+  }
+  if(b.todayProfit!==undefined){
+    el('todayProfit').textContent='Today: '+(b.todayProfit>=0?'+':'')+'$'+b.todayProfit.toFixed(3);
+    el('todayProfit').className='text-[10px] mono '+(b.todayProfit>=0?'profit':'loss');
+    el('detailToday').textContent=(b.todayProfit>=0?'+':'')+'$'+b.todayProfit.toFixed(3);
+    el('detailToday').className='mono font-bold text-[13px] '+(b.todayProfit>=0?'profit':'loss');
+  }
+  if(b.unrealizedPnl!==undefined){
+    el('detailUnreal').textContent=(b.unrealizedPnl>=0?'+':'')+'$'+b.unrealizedPnl.toFixed(3);
+    el('detailUnreal').className='mono font-bold text-[13px] '+(b.unrealizedPnl>=0?'profit':'loss');
+  }
 });
 socket.on('stats',s=>{
-  if(s.totalProfit!==undefined){ el('totalProfit').textContent=(s.totalProfit>=0?'+':'')+'$'+s.totalProfit.toFixed(3); el('winCount').textContent=s.winCount+'W'; el('lossCount').textContent=s.lossCount+'L'; }
+  if(s.totalProfit!==undefined){
+    const sign=s.totalProfit>=0?'+':'';
+    el('totalProfit').textContent=sign+'$'+s.totalProfit.toFixed(3);
+    el('winCount').textContent=s.winCount+'W'; el('lossCount').textContent=s.lossCount+'L';
+    el('winRate').textContent=(s.winRate||0)+'% WR';
+    el('detailTotal').textContent=sign+'$'+s.totalProfit.toFixed(3);
+    el('detailWinRate').textContent=(s.winRate||0)+'%';
+    el('detailWL').textContent=s.winCount+'W '+s.lossCount+'L';
+  }
+  if(s.todayProfit!==undefined){
+    el('todayProfit').textContent='Today: '+(s.todayProfit>=0?'+':'')+'$'+s.todayProfit.toFixed(3);
+    el('detailToday').textContent=(s.todayProfit>=0?'+':'')+'$'+s.todayProfit.toFixed(3);
+  }
+  if(s.unrealizedPnl!==undefined){
+    el('detailUnreal').textContent=(s.unrealizedPnl>=0?'+':'')+'$'+s.unrealizedPnl.toFixed(3);
+    el('unrealPnl').textContent='Unreal PNL: '+(s.unrealizedPnl>=0?'+':'')+'$'+s.unrealizedPnl.toFixed(3);
+  }
   el('turboTimer').textContent=s.lastTradeAgo?`Turbo ${Math.max(0,45-s.lastTradeAgo)}s • Last ${s.lastTradeAgo}s`:'Turbo 45s';
   el('trailInfo').textContent=(s.trailingCount||0)+' trailing active';
+  el('lastTrade').textContent=s.lastTradeAgo?`Last: ${s.lastTradeAgo}s ago`:'Last: never';
 });
 socket.on('positions',p=>{
   el('pos').innerHTML=p.length?p.map(x=>{
     const tr=x.trailing;
-    const trailHtml = tr ? `<div class="text-[9px] mt-1 ${tr.active?'text-green-400':'text-zinc-500'}">${tr.active ? `🟢 TRAIL ON Peak ${ (tr.profitPeak||0).toFixed(3)}% Stop ${tr.stopPrice? tr.stopPrice.toFixed(4):''}` : `Trail waiting Act ${x.trailing? '':'0.12%'} `}</div>` : '';
+    const trailHtml = tr ? `<div class="text-[9px] mt-1 ${tr.active?'text-green-400':'text-zinc-500'}">${tr.active ? `🟢 TRAIL ON Peak ${ (tr.profitPeak||0).toFixed(3)}% Stop ${tr.stopPrice? tr.stopPrice.toFixed(3):''}` : `Trail wait ${tr.profitPeak? tr.profitPeak.toFixed(3)+'%':''} → Act ${el('trailAct').value}%`}</div>` : '';
     const borderClass = tr && tr.active ? 'trail-active' : ( (x.unrealizedPnl||0)>=0?'border-green-900/50':'border-red-900/50');
-    return `<div class="flex flex-col bg-[#0a0a0b] p-2.5 rounded-xl mt-2 border ${borderClass}"><div class="flex justify-between"><span>${x.symbol} ${x.side} ${x.leverage||''}x</span><span class="${(x.unrealizedPnl||0)>=0?'profit':'loss'}">$${(x.unrealizedPnl||0).toFixed(3)} (${(x.percentage||0).toFixed(3)}%)</span></div>${trailHtml}</div>`;
+    return `<div class="flex flex-col bg-[#0a0a0b] p-2.5 rounded-xl mt-2 border ${borderClass}"><div class="flex justify-between"><span>${x.symbol} ${x.side} ${x.leverage||''}x</span><span class="${(x.unrealizedPnl||0)>=0?'profit':'loss'}">$${(x.unrealizedPnl||0).toFixed(3)} (${(x.percentage||0).toFixed(3)}%)</span></div>${trailHtml}<div class="text-[9px] text-zinc-500 mt-1">Entry ${parseFloat(x.entryPrice||0).toFixed(4)} Mark ${parseFloat(x.markPrice||0).toFixed(4)}</div></div>`;
   }).join(''):'No positions - START ultra';
 });
 socket.on('trailing',map=>{
   const keys=Object.keys(map);
   if(keys.length===0){ el('trailMap').innerHTML=''; return; }
-  el('trailMap').innerHTML='<div class="mt-2 p-2 bg-green-950/20 rounded-xl border border-green-800/30"><b class="text-green-400">🟢 TRAILING ACTIVE:</b> '+keys.map(k=>{const t=map[k]; return `${k} ${t.side} Peak ${ (t.profitPeak||0).toFixed(3)}% Stop ${t.stopPrice? t.stopPrice.toFixed(3):''} ${t.active?'ACTIVE':''}`;}).join(' | ')+'</div>';
+  el('trailMap').innerHTML='<div class="mt-2 p-2 bg-green-950/20 rounded-xl border border-green-800/30"><b class="text-green-400">🟢 TRAILING:</b> '+keys.map(k=>{const t=map[k]; return `${k} Peak ${ (t.profitPeak||0).toFixed(3)}% ${t.active?'ACTIVE':''}`;}).join(' | ')+'</div>';
 });
 socket.on('newTrade',t=>{
   el('hist').innerHTML=`<div class="bg-[#0a0a0b] p-2.5 rounded-xl mt-2 flex justify-between border border-yellow-900/20"><span>${t.pair} <b class="${t.side==='LONG'?'profit':'loss'}">${t.side}</b> @${t.entryPrice.toFixed(2)}</span><span class="text-yellow-400">${t.confidence}% ${t.turbo?'🔥':''}</span></div>`+el('hist').innerHTML;
 });
 socket.on('tradeHistory',h=>{
-  if(h.length>0) el('hist').innerHTML=h.slice(0,25).map(t=>`<div class="bg-[#0a0a0b] p-2 rounded-xl mt-1.5 flex justify-between text-[10px]"><span>${t.pair} ${t.side} @${t.entryPrice.toFixed(1)} → ${t.exitPrice? t.exitPrice.toFixed(1):'OPEN'} ${t.status? '('+t.status+')':''}</span><span class="${(t.profit||0)>=0?'profit':'loss'}">${t.profit!==undefined?'$'+t.profit.toFixed(3):t.confidence+'%'}</span></div>`).join('');
+  if(h.length>0) {
+    el('hist').innerHTML=h.slice(0,30).map(t=>{
+      const profitStr = t.profit!==undefined ? (t.profit>=0?'+':'')+'$'+t.profit.toFixed(3) : t.confidence+'%';
+      const profitClass = (t.profit||0)>=0?'profit':'loss';
+      return `<div class="bg-[#0a0a0b] p-2 rounded-xl mt-1.5 flex justify-between text-[10px]"><span>${t.pair} ${t.side} @${t.entryPrice.toFixed(2)} → ${t.exitPrice? t.exitPrice.toFixed(2):'OPEN'} <span class="text-zinc-500">(${t.status||'OPEN'})</span></span><span class="${profitClass} font-bold">${profitStr}</span></div>`;
+    }).join('');
+  }
 });
 socket.on('marketData',d=>{
   const vals=Object.values(d).slice(0,12);
@@ -158,15 +210,16 @@ socket.on('log',l=>{
   const cls=l.type||'info';
   el('logs').innerHTML=`<div class="log ${cls}"><span class="text-zinc-600">${l.time}</span> ${l.msg}</div>`+el('logs').innerHTML;
 });
-socket.on('scanLogs',logs=>{ if(logs && logs.length) el('logs').innerHTML=logs.slice(0,35).map(l=>`<div class="log ${l.type||''}"><span class="text-zinc-600">${l.time}</span> ${l.msg}</div>`).join(''); });
+socket.on('scanLogs',logs=>{ if(logs && logs.length) el('logs').innerHTML=logs.slice(0,40).map(l=>`<div class="log ${l.type||''}"><span class="text-zinc-600">${l.time}</span> ${l.msg}</div>`).join(''); });
 socket.on('botStatus',s=>{ el('botStatus').textContent=s; el('botStatus').className='text-[13px] font-black mono '+(s==='RUNNING'?'profit pulse':'text-zinc-400'); el('startBtn').textContent=s==='RUNNING'?'RUNNING ⚡':'START ULTRA'; });
 socket.on('error',e=>{ el('logs').innerHTML=`<div class="log error">${e}</div>`+el('logs').innerHTML; });
 el('startBtn').onclick=()=>{fetch('/api/bot/start',{method:'POST'});};
 el('stopBtn').onclick=()=>{fetch('/api/bot/stop',{method:'POST'});};
-el('instantBtn').onclick=()=>{ el('instantBtn').textContent='TRADING...'; fetch('/api/instant-trade',{method:'POST'}).then(r=>r.json()).then(j=>{ el('instantBtn').textContent='⚡ INSTANT TRADE NOW!'; alert('Instant: '+(j.picked? j.picked.pair+' '+j.picked.side:'BTC LONG'));}).catch(()=>{el('instantBtn').textContent='⚡ INSTANT TRADE NOW!';}); };
+el('instantBtn').onclick=()=>{ el('instantBtn').textContent='TRADING...'; fetch('/api/instant-trade',{method:'POST'}).then(r=>r.json()).then(j=>{ el('instantBtn').textContent='⚡ INSTANT TRADE!'; }).catch(()=>{el('instantBtn').textContent='⚡ INSTANT TRADE!';}); };
 el('testLong').onclick=()=>{fetch('/api/test-trade',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({pair:'BTC/USDT',side:'LONG'})});};
 el('testShort').onclick=()=>{fetch('/api/test-trade',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({pair:'BTC/USDT',side:'SHORT'})});};
-el('clearLog').onclick=()=>el('logs').innerHTML='Cleared - waiting V4.1 trail...';
+el('clearLog').onclick=()=>el('logs').innerHTML='Cleared...';
+el('resetStats').onclick=()=>{ if(confirm('Reset all PNL/Win/Loss stats?')) fetch('/api/bot/reset-stats',{method:'POST'}).then(()=>location.reload()); };
 updateNotional();
 fetch('/api/config').then(r=>r.json()).then(d=>{ if(d.logs) el('logs').innerHTML=d.logs.slice(0,35).map(l=>`<div class="log ${l.type||''}"><span class="text-zinc-600">${l.time}</span> ${l.msg}</div>`).join(''); if(d.config){ el('margin').value=d.config.marginUsdt; lev.value=d.config.leverage; el('tp').value=d.config.tpPercent; el('sl').value=d.config.slPercent; el('maxPos').value=d.config.maxPositions; el('confidence').value=d.config.confidenceThreshold; el('trailAct').value=d.config.trailActPercent; el('trailDist').value=d.config.trailDistancePercent; el('trailEnabled').checked=d.config.trailEnabled; updateNotional(); }});
 </script>
