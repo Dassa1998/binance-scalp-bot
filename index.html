@@ -21,130 +21,132 @@
   font-family: "Optimistic Mono", ui-monospace, monospace;
 }
 </style><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
-<title>SNIPER V5 - 75% WR</title>
+<title>MEGA V6 - 1 min 5 trades</title>
 <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
 <script src="https://cdn.tailwindcss.com"></script>
 <style>
-body{background:#020208;color:#e5e7eb;font-family:Inter,sans-serif}
-.glass{background:#121218;border:1px solid #2a2a3a}
+body{background:#080208;color:#e5e7eb;font-family:Inter,sans-serif}
+.glass{background:#1a1218;border:1px solid #3a2a3a}
 .mono{font-family:monospace}
 .profit{color:#22c55e}.loss{color:#ef4444}
-.log{font-size:11px; font-family:monospace; border-bottom:1px solid #1f1f2f; padding:5px 0}
-.log.trade{color:#facc15} .log.signal{color:#38bdf8} .log.profit{color:#22c55e; font-weight:bold} .log.error{color:#ef4444} .log.sniper{color:#a78bfa; font-weight:bold; background:#1a1530; padding:6px; border-radius:8px} .log.success{color:#22c55e} .log.warn{color:#eab308}
-.pulse{animation:pulse 1.5s infinite} @keyframes pulse{0%,100%{opacity:1} 50%{opacity:.5}}
-.sniper-box{background:linear-gradient(90deg, #a78bfa15, #06b6d415); border:1px solid #a78bfa40}
+.log{font-size:11px; font-family:monospace; border-bottom:1px solid #2a1a2a; padding:5px 0}
+.log.trade{color:#facc15} .log.signal{color:#38bdf8} .log.profit{color:#22c55e; font-weight:bold} .log.error{color:#ef4444} .log.mega{color:#f97316; font-weight:bold; background:#2a1510; padding:6px; border-radius:8px} .log.success{color:#22c55e} .log.warn{color:#eab308}
+.pulse{animation:pulse 1s infinite} @keyframes pulse{0%,100%{opacity:1} 50%{opacity:.6}}
+.mega-box{background:linear-gradient(90deg, #f9731615, #ef444415); border:1px solid #f9731640}
+.warn-box{background:linear-gradient(90deg, #ef444420, #eab30820); border:1px solid #ef444460}
 </style>
 </head>
 <body class="p-2">
 <div class="max-w-[700px] mx-auto space-y-3">
 <div class="flex justify-between items-center glass rounded-2xl p-3 sticky top-2 z-50">
-<div><h1 class="font-black text-[14px]">🎯 SNIPER V5 • 75% WR</h1><p class="text-[9px] text-violet-400">DEEP RESEARCH • 5M TREND + 1M PULLBACK</p></div>
-<div class="flex gap-2"><button id="startBtn" class="px-5 py-3 bg-violet-600 rounded-xl text-xs font-black pulse">START SNIPER</button><button id="stopBtn" class="px-4 py-3 bg-zinc-800 rounded-xl text-xs font-bold">STOP</button></div>
+<div><h1 class="font-black text-[14px]">⚡ MEGA V6 • 1 min 5 trades</h1><p class="text-[9px] text-orange-400">PAID BOT STYLE • 12 pairs • 0.8s scan</p></div>
+<div class="flex gap-2"><button id="startBtn" class="px-5 py-3 bg-orange-600 rounded-xl text-xs font-black pulse">START MEGA</button><button id="stopBtn" class="px-4 py-3 bg-zinc-800 rounded-xl text-xs font-bold">STOP</button></div>
 </div>
 
-<div class="sniper-box rounded-2xl p-3 text-[11px]">
-<p class="font-bold text-violet-300">🎯 SNIPER STRATEGY - Why 70-80% WR?</p>
-<p class="text-zinc-300 mt-1"><b>Research:</b> Old bot used PEPE/WIF (35% WR), Turbo 45s forced trades, TP 0.1% < fees. New Sniper:</p>
-<p class="text-zinc-400 mt-1">• <b>Pairs:</b> BTC/ETH/SOL/BNB/AVAX only (high liquidity = 70%+ WR)</p>
-<p class="text-zinc-400">• <b>5m trend filter:</b> Only LONG when 5m EMA9>21>50>200, SHORT opposite - no counter trend</p>
-<p class="text-zinc-400">• <b>1m pullback entry:</b> Price near EMA21 (0.18%), RSI 42-58, BB %B 0.15-0.42, Volume ↑, Bullish candle</p>
-<p class="text-zinc-400">• <b>TP 0.75% SL 0.65%:</b> After fees 0.67% profit, EV = 0.75*0.75 - 0.25*0.65 = +0.40% per trade</p>
-<p class="text-zinc-400">• <b>Patience:</b> 5-8 trades/day, not 22 - Quality over quantity</p>
+<div class="warn-box rounded-2xl p-3 text-[11px]">
+<p class="font-bold text-red-300">⚠️ REALITY CHECK - Paid bots wage:</p>
+<p class="text-zinc-300">1 min 5 trades = 300 trades/hour, fees 0.08% per trade = 24% fees/hour! Profit karanna 57%+ WR oni!</p>
+<p class="text-yellow-300 mt-1">MEGA V6: TP 0.45% SL 0.40% = net 0.37% profit / -0.48% loss, breakeven 56.5% WR, target 60% WR. Small margin $3 test karanna!</p>
+</div>
+
+<div class="mega-box rounded-2xl p-3 text-[11px]">
+<p class="font-bold text-orange-300">⚡ MEGA STRATEGY - Anith paid botla wage:</p>
+<p class="text-zinc-300">• 12 pairs: BTC/ETH/SOL/BNB/AVAX/LINK/NEAR/ARB/DOGE/PEPE/WIF/BONK (volatile + liquid)</p>
+<p class="text-zinc-400">• 0.8s scan (was 2.5s) + 15sec micro momentum >0.12% + volume spike</p>
+<p class="text-zinc-400">• Max 3 pos parallel, TP 0.45% SL 0.40%, Trail 0.20%/0.12% ultra fast lock</p>
+<p class="text-zinc-400">• Cooldown 15s loss / 5s win = thappara next trade, 1 min 3-5 trades possible in volatile market</p>
+<p class="text-zinc-400">• Threshold 58% (low) = trades wedi, but 60% WR target for profit</p>
 </div>
 
 <div class="grid grid-cols-3 gap-2">
-<div class="glass rounded-2xl p-3"><p class="text-[9px] text-zinc-500">USDT BALANCE</p><p id="bal" class="text-xl font-black mono">$0.00</p><p id="unrealPnl" class="text-[10px] mono">Unreal: $0.00</p><p id="sniperScanned" class="text-[8px] text-violet-400 mt-1">Scanned 0</p></div>
-<div class="glass rounded-2xl p-3 border-2" id="profitBox"><p class="text-[9px] text-zinc-500">PROFIT • 75% WR TARGET</p><p id="totalProfit" class="text-xl font-black mono profit">+$0.000</p><p id="todayProfit" class="text-[10px] mono">Today: $0.00</p><p class="text-[10px] mt-1"><span id="winCount" class="profit font-bold">0W</span> / <span id="lossCount" class="loss font-bold">0L</span> • <span id="winRate" class="text-yellow-400 font-bold">0% WR</span></p><p id="consecLoss" class="text-[8px] text-zinc-500">Target 75%</p></div>
-<div class="glass rounded-2xl p-3"><p class="text-[9px] text-zinc-500">SNIPER STATUS</p><p id="botStatus" class="text-[13px] font-black mono">STOPPED</p><p id="trailInfo" class="text-[10px] text-violet-400">0 setups</p><p id="cooldown" class="text-[9px] text-orange-400"></p><p id="lastSniper" class="text-[8px] text-zinc-500 mt-1">Wait for setup</p></div>
+<div class="glass rounded-2xl p-3"><p class="text-[9px] text-zinc-500">USDT BALANCE</p><p id="bal" class="text-xl font-black mono">$0.00</p><p id="unrealPnl" class="text-[10px] mono">Unreal: $0.00</p><p id="tradesPerMin" class="text-[11px] font-black text-orange-400 mt-1">0 trades/min</p></div>
+<div class="glass rounded-2xl p-3 border-2" id="profitBox"><p class="text-[9px] text-zinc-500">MEGA PROFIT • 1 min 5 trades</p><p id="totalProfit" class="text-xl font-black mono profit">+$0.000</p><p id="todayProfit" class="text-[10px] mono">Today: $0.00</p><p class="text-[10px] mt-1"><span id="winCount" class="profit font-bold">0W</span> / <span id="lossCount" class="loss font-bold">0L</span> • <span id="winRate" class="text-yellow-400 font-bold">0% WR</span></p><p id="consecLoss" class="text-[8px] text-zinc-500">Target 60% WR for profit</p></div>
+<div class="glass rounded-2xl p-3"><p class="text-[9px] text-zinc-500">MEGA STATUS</p><p id="botStatus" class="text-[13px] font-black mono">STOPPED</p><p id="trailInfo" class="text-[10px] text-orange-400">0 momentum</p><p id="cooldown" class="text-[9px] text-yellow-400"></p><p id="lastTrade" class="text-[8px] text-zinc-500 mt-1">Wait for micro pump</p></div>
 </div>
 
-<div class="glass rounded-2xl p-3 border border-violet-900/30">
-<h3 class="font-bold text-xs mb-2 flex justify-between"><span>📊 SNIPER STATS • LIVE</span><button id="resetStats" class="text-[9px] bg-zinc-800 px-2 py-1 rounded">Reset</button></h3>
+<div class="glass rounded-2xl p-3 border border-orange-900/30">
+<h3 class="font-bold text-xs mb-2 flex justify-between"><span>📊 MEGA STATS • LIVE</span><button id="resetStats" class="text-[9px] bg-zinc-800 px-2 py-1 rounded">Reset</button></h3>
 <div class="grid grid-cols-4 gap-2 text-[10px]">
-<div class="bg-[#0a0a12] p-2 rounded-xl"><p class="text-zinc-500">UNREAL</p><p id="detailUnreal" class="mono font-bold text-[13px]">$0.00</p></div>
-<div class="bg-[#0a0a12] p-2 rounded-xl"><p class="text-zinc-500">TODAY</p><p id="detailToday" class="mono font-bold text-[13px]">$0.00</p></div>
-<div class="bg-[#0a0a12] p-2 rounded-xl"><p class="text-zinc-500">TOTAL</p><p id="detailTotal" class="mono font-bold text-[13px]">$0.00</p></div>
-<div class="bg-[#0a0a12] p-2 rounded-xl"><p class="text-zinc-500">WIN RATE</p><p id="detailWinRate" class="mono font-bold text-[13px]">0%</p><p id="detailWL" class="text-[9px]">0W 0L</p></div>
+<div class="bg-[#1a0a12] p-2 rounded-xl"><p class="text-zinc-500">UNREAL</p><p id="detailUnreal" class="mono font-bold text-[13px]">$0.00</p></div>
+<div class="bg-[#1a0a12] p-2 rounded-xl"><p class="text-zinc-500">TODAY</p><p id="detailToday" class="mono font-bold text-[13px]">$0.00</p></div>
+<div class="bg-[#1a0a12] p-2 rounded-xl"><p class="text-zinc-500">TOTAL</p><p id="detailTotal" class="mono font-bold text-[13px]">$0.00</p></div>
+<div class="bg-[#1a0a12] p-2 rounded-xl"><p class="text-zinc-500">WIN RATE</p><p id="detailWinRate" class="mono font-bold text-[13px]">0%</p><p id="detailWL" class="text-[9px]">0W 0L</p></div>
 </div>
 <div class="grid grid-cols-4 gap-2 text-[9px] mt-2">
-<div class="bg-[#0a0a12] p-1.5 rounded-lg"><p class="text-zinc-500">SCANNED</p><p id="statScanned" class="font-bold">0</p></div>
-<div class="bg-[#0a0a12] p-1.5 rounded-lg"><p class="text-zinc-500">CHOPPY FILTER</p><p id="statChoppy" class="font-bold">0</p></div>
-<div class="bg-[#0a0a12] p-1.5 rounded-lg"><p class="text-zinc-500">RSI FILTER</p><p id="statRSI" class="font-bold">0</p></div>
-<div class="bg-[#0a0a12] p-1.5 rounded-lg"><p class="text-zinc-500">SNIPER SETUP</p><p id="statSniper" class="font-bold text-violet-400">0</p></div>
+<div class="bg-[#1a0a12] p-1.5 rounded-lg border border-orange-900/30"><p class="text-zinc-500">TRADES/MIN</p><p id="statTPM" class="font-black text-orange-400 text-[13px]">0</p></div>
+<div class="bg-[#1a0a12] p-1.5 rounded-lg"><p class="text-zinc-500">SCANNED</p><p id="statScanned" class="font-bold">0</p></div>
+<div class="bg-[#1a0a12] p-1.5 rounded-lg"><p class="text-zinc-500">MOMENTUM</p><p id="statMom" class="font-bold text-yellow-400">0</p></div>
+<div class="bg-[#1a0a12] p-1.5 rounded-lg"><p class="text-zinc-500">OPEN</p><p id="statOpen" class="font-bold">0</p></div>
 </div>
 </div>
 
 <div class="glass rounded-[24px] p-4">
-<div class="flex justify-between items-center mb-4"><h2 class="font-bold text-sm">🎯 Sniper V5 Settings • 75% WR</h2><span id="notionalTop" class="px-3 py-1 rounded-full bg-violet-500/10 text-violet-400 text-[11px] border border-violet-500/20">10x • $50</span></div>
+<div class="flex justify-between items-center mb-4"><h2 class="font-bold text-sm">⚡ MEGA V6 • 1 min 5 trades</h2><span id="notionalTop" class="px-3 py-1 rounded-full bg-orange-500/10 text-orange-400 text-[11px] border border-orange-500/20">10x • $30</span></div>
 
 <div class="grid grid-cols-2 gap-3 mb-3">
-<div><label class="text-[10px] text-zinc-500">MARGIN / TRADE</label><input id="margin" type="text" value="5" class="w-full bg-[#0a0a12] border border-zinc-700 rounded-2xl px-4 py-3.5 text-[16px] mono mt-1.5 outline-none focus:border-violet-500"></div>
-<div><label class="text-[10px] text-zinc-500">LEVERAGE <span id="levLabel">10X</span></label><input id="leverage" type="range" min="5" max="20" value="10" class="w-full mt-5 accent-violet-500 h-2"></div>
+<div><label class="text-[10px] text-zinc-500">MARGIN / TRADE (Small $3 safe)</label><input id="margin" type="text" value="3" class="w-full bg-[#1a0a12] border border-zinc-700 rounded-2xl px-4 py-3.5 text-[16px] mono mt-1.5 outline-none focus:border-orange-500"></div>
+<div><label class="text-[10px] text-zinc-500">LEVERAGE <span id="levLabel">10X</span></label><input id="leverage" type="range" min="5" max="20" value="10" class="w-full mt-5 accent-orange-500 h-2"></div>
 </div>
 
 <div class="grid grid-cols-4 gap-2 mb-3">
-<div><label class="text-[10px] text-zinc-500">TP % (0.75 best)</label><input id="tp" type="text" value="0.75" class="w-full bg-[#0a0a12] border-2 border-green-900 rounded-2xl px-3 py-3 text-[15px] mono mt-1 outline-none text-green-400 font-bold"></div>
-<div><label class="text-[10px] text-zinc-500">SL % (0.65)</label><input id="sl" type="text" value="0.65" class="w-full bg-[#0a0a12] border border-red-900 rounded-2xl px-3 py-3 text-[15px] mono mt-1 outline-none text-red-400"></div>
-<div><label class="text-[10px] text-zinc-500">MAX POS (1)</label><input id="maxPos" type="text" value="1" class="w-full bg-[#0a0a12] border border-zinc-700 rounded-2xl px-3 py-3 text-[15px] mono mt-1 outline-none"></div>
-<div><label class="text-[10px] text-zinc-500">THRESHOLD (75% WR)</label><input id="confidence" type="text" value="75" class="w-full bg-[#0a0a12] border-2 border-violet-700 rounded-2xl px-3 py-3 text-[15px] mono mt-1 outline-none"></div>
+<div><label class="text-[10px] text-zinc-500">TP % (0.45 fast)</label><input id="tp" type="text" value="0.45" class="w-full bg-[#1a0a12] border-2 border-green-900 rounded-2xl px-3 py-3 text-[15px] mono mt-1 outline-none text-green-400 font-bold"></div>
+<div><label class="text-[10px] text-zinc-500">SL % (0.40)</label><input id="sl" type="text" value="0.40" class="w-full bg-[#1a0a12] border border-red-900 rounded-2xl px-3 py-3 text-[15px] mono mt-1 outline-none text-red-400"></div>
+<div><label class="text-[10px] text-zinc-500">MAX POS (3 parallel)</label><input id="maxPos" type="text" value="3" class="w-full bg-[#1a0a12] border-2 border-orange-700 rounded-2xl px-3 py-3 text-[15px] mono mt-1 outline-none"></div>
+<div><label class="text-[10px] text-zinc-500">THRESHOLD (58 fast)</label><input id="confidence" type="text" value="58" class="w-full bg-[#1a0a12] border-2 border-orange-700 rounded-2xl px-3 py-3 text-[15px] mono mt-1 outline-none"></div>
 </div>
 
-<div class="sniper-box rounded-2xl p-3 mb-3">
-<p class="text-[11px] font-bold text-violet-300">🎯 SNIPER TRAILING - Profit Lock</p>
+<div class="mega-box rounded-2xl p-3 mb-3">
+<p class="text-[11px] font-bold text-orange-300">⚡ MEGA TRAILING - Ultra fast lock</p>
 <div class="grid grid-cols-3 gap-2 mt-2">
-<div><label class="text-[10px] text-zinc-400">TRAIL ACT %</label><input id="trailAct" type="text" value="0.45" class="w-full bg-[#0a0a12] border border-violet-800 rounded-xl px-3 py-2.5 text-[14px] mono mt-1 outline-none text-violet-300"></div>
-<div><label class="text-[10px] text-zinc-400">TRAIL DIST %</label><input id="trailDist" type="text" value="0.22" class="w-full bg-[#0a0a12] border border-violet-800 rounded-xl px-3 py-2.5 text-[14px] mono mt-1 outline-none text-yellow-300"></div>
-<div class="flex flex-col justify-center"><label class="flex items-center gap-2 text-[11px] bg-violet-950/50 px-3 py-2.5 rounded-xl border border-violet-800"><input type="checkbox" id="trailEnabled" checked class="accent-violet-500"> TRAIL ON</label></div>
+<div><label class="text-[10px] text-zinc-400">TRAIL ACT %</label><input id="trailAct" type="text" value="0.20" class="w-full bg-[#1a0a12] border border-orange-800 rounded-xl px-3 py-2.5 text-[14px] mono mt-1 outline-none text-orange-300"></div>
+<div><label class="text-[10px] text-zinc-400">TRAIL DIST %</label><input id="trailDist" type="text" value="0.12" class="w-full bg-[#1a0a12] border border-orange-800 rounded-xl px-3 py-2.5 text-[14px] mono mt-1 outline-none text-yellow-300"></div>
+<div class="flex flex-col justify-center"><label class="flex items-center gap-2 text-[11px] bg-orange-950/50 px-3 py-2.5 rounded-xl border border-orange-800"><input type="checkbox" id="trailEnabled" checked class="accent-orange-500"> TRAIL ON</label></div>
 </div>
-<p class="text-[9px] text-zinc-500 mt-2">0.45% profit → trail, 0.22% retrace → close, lock 0.23% min profit (after fees 0.15%)</p>
-</div>
-
-<div class="grid grid-cols-2 gap-2 mb-3">
-<div><label class="text-[10px] text-zinc-500">COOLDOWN LOSS sec (120)</label><input id="cooldownSec" type="text" value="120" class="w-full bg-[#0a0a12] border border-orange-900/50 rounded-xl px-3 py-2.5 text-[13px] mono mt-1 outline-none"></div>
-<div><label class="text-[10px] text-zinc-500">DAILY LOSS LIMIT $</label><input id="dailyLoss" type="text" value="3" class="w-full bg-[#0a0a12] border border-red-900/50 rounded-xl px-3 py-2.5 text-[13px] mono mt-1 outline-none"></div>
+<p class="text-[9px] text-zinc-500 mt-2">0.20% profit → trail, 0.12% retrace → close, lock 0.08% min (after fees)</p>
 </div>
 
-<button id="saveBtn" class="w-full py-4 rounded-full bg-violet-600 text-white font-black text-[13px]">SAVE SNIPER V5 - 75% WR</button>
+<button id="saveBtn" class="w-full py-4 rounded-full bg-orange-600 text-white font-black text-[13px]">SAVE MEGA V6 - 1 min 5 trades</button>
 
 <div class="grid grid-cols-2 gap-2 mt-3">
-<button id="instantBtn" class="py-3.5 rounded-2xl bg-gradient-to-r from-violet-600 to-indigo-500 text-white font-black text-xs">🎯 SNIPER SCAN (75%+ only)</button>
-<button id="resetBtn" class="py-3.5 rounded-2xl bg-zinc-800 text-white font-bold text-xs">RESET & FRESH START</button>
+<button id="instantBtn" class="py-3.5 rounded-2xl bg-gradient-to-r from-orange-600 to-red-500 text-white font-black text-xs">⚡ MEGA INSTANT 12 pairs</button>
+<button id="resetBtn" class="py-3.5 rounded-2xl bg-zinc-800 text-white font-bold text-xs">RESET & FRESH</button>
 </div>
-<p class="text-[9px] text-zinc-500 mt-2 text-center">Old: 22 trades/day 13.6% WR -$1.73 loss. Sniper: 5-8 trades/day 75% WR +$2-4/day expected</p>
+<p class="text-[9px] text-zinc-500 mt-2 text-center">Paid bot style: 1 min 3-5 trades in volatile market, 30 min 15-25 trades, need 60% WR for profit! Testnet eke test karanna!</p>
 </div>
 
-<div class="glass rounded-2xl p-3 max-h-[220px] overflow-auto"><div class="flex justify-between items-center mb-2"><h3 class="font-bold text-xs">🎯 SNIPER LOGS • Why no trade?</h3><button id="clearLog" class="text-[10px] text-zinc-500 px-2 py-1 bg-zinc-800 rounded">clear</button></div><div id="logs" class="text-[11px] mono">Sniper V5 ready - Waiting for 5m trend + 1m pullback - Patience = 75% WR...</div></div>
+<div class="glass rounded-2xl p-3 max-h-[240px] overflow-auto"><div class="flex justify-between items-center mb-2"><h3 class="font-bold text-xs">⚡ MEGA LOGS • Micro momentum</h3><button id="clearLog" class="text-[10px] text-zinc-500 px-2 py-1 bg-zinc-800 rounded">clear</button></div><div id="logs" class="text-[11px] mono">MEGA V6 ready - 12 pairs 0.8s scan - Waiting for 0.12% micro pump...</div></div>
 
 <div class="grid grid-cols-1 gap-3">
-<div class="glass rounded-2xl p-3"><h3 class="font-bold text-xs mb-2">OPEN POSITIONS • SNIPER</h3><div id="pos" class="text-xs mono">No positions - Sniper waits for perfect setup</div></div>
-<div class="glass rounded-2xl p-3"><h3 class="font-bold text-xs mb-2">TRADE HISTORY • SNIPER PROFIT <span id="histProfit" class="profit">+$0.00</span></h3><div id="hist" class="text-[11px] mono max-h-[280px] overflow-auto">No trades - Sniper will be 75% WR, not 13%</div></div>
+<div class="glass rounded-2xl p-3"><h3 class="font-bold text-xs mb-2">OPEN POSITIONS • MEGA (Max 3)</h3><div id="pos" class="text-xs mono">No positions - MEGA will open 3 parallel in volatile market</div></div>
+<div class="glass rounded-2xl p-3"><h3 class="font-bold text-xs mb-2">TRADE HISTORY • MEGA <span id="histProfit" class="profit">+$0.00</span></h3><div id="hist" class="text-[11px] mono max-h-[300px] overflow-auto">No trades - 1 min 5 trades in volatile market</div></div>
 </div>
 
-<div class="glass rounded-2xl p-3"><h3 class="font-bold text-xs mb-2">📊 SNIPER MARKET • 5m Trend + 1m Pullback</h3><div id="marketTable" class="text-[10px] mono grid grid-cols-1 gap-1"></div><div id="trailMap" class="mt-2 text-[10px]"></div></div>
+<div class="glass rounded-2xl p-3"><h3 class="font-bold text-xs mb-2">📊 MEGA MARKET • 15sec Micro Momentum</h3><div id="marketTable" class="text-[10px] mono grid grid-cols-1 gap-1"></div><div id="trailMap" class="mt-2 text-[10px]"></div></div>
 </div>
 
 <script>
 const el=id=>document.getElementById(id);
 function setup(id){const e=el(id); if(!e) return; e.addEventListener('focus',()=>e.select()); e.addEventListener('input',()=>{if(!/^[0-9]*\.?[0-9]*$/.test(e.value)&&e.value!==''){e.value=e.value.slice(0,-1);} updateNotional();});}
-['margin','tp','sl','maxPos','confidence','trailAct','trailDist','dailyLoss','cooldownSec'].forEach(setup);
+['margin','tp','sl','maxPos','confidence','trailAct','trailDist'].forEach(setup);
 const lev=el('leverage');
 lev.addEventListener('input',()=>{el('levLabel').textContent=lev.value+'X'; updateNotional();});
 function updateNotional(){const m=parseFloat(el('margin').value)||0; const l=parseFloat(lev.value)||1; el('notionalTop').textContent=l+'x • $'+(m*l)+' notional';}
 el('saveBtn').onclick=()=>{
-  const d={margin:el('margin').value, leverage:lev.value, tp:el('tp').value, sl:el('sl').value, maxPos:el('maxPos').value, conf:el('confidence').value, trailAct:el('trailAct').value, trailDist:el('trailDist').value, trailOn:el('trailEnabled').checked, dailyLoss:el('dailyLoss').value, cooldown:el('cooldownSec').value};
-  fetch('/api/config',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({leverage:d.leverage, marginUsdt:d.margin, tpPercent:d.tp, slPercent:d.sl, maxPositions:d.maxPos, minUsdt:1, confidenceThreshold:d.conf, trailActPercent:d.trailAct, trailDistancePercent:d.trailDist, trailEnabled:d.trailOn, maxDailyLoss:d.dailyLoss, cooldownAfterLossSec:d.cooldown})}).then(()=>alert('SNIPER V5 Saved! TP '+d.tp+'% SL '+d.sl+'% Thr '+d.conf+'% - 75% WR target'));
+  const d={margin:el('margin').value, leverage:lev.value, tp:el('tp').value, sl:el('sl').value, maxPos:el('maxPos').value, conf:el('confidence').value, trailAct:el('trailAct').value, trailDist:el('trailDist').value, trailOn:el('trailEnabled').checked};
+  fetch('/api/config',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({leverage:d.leverage, marginUsdt:d.margin, tpPercent:d.tp, slPercent:d.sl, maxPositions:d.maxPos, minUsdt:1, confidenceThreshold:d.conf, trailActPercent:d.trailAct, trailDistancePercent:d.trailDist, trailEnabled:d.trailOn})}).then(()=>alert('MEGA V6 Saved! TP '+d.tp+'% SL '+d.sl+'% Max '+d.maxPos+' pos - 1 min 5 trades target'));
 };
 const socket=io();
 socket.on('balance',b=>{
   el('bal').textContent='$'+(b.total||0).toFixed(2);
   el('unrealPnl').textContent='Unreal: '+(b.unrealizedPnl>=0?'+':'')+'$'+(b.unrealizedPnl||0).toFixed(3);
   el('unrealPnl').className='text-[10px] mono '+(b.unrealizedPnl>=0?'profit':'loss');
-  if(b.sniperStats){
-    el('sniperScanned').textContent=`Scanned ${b.sniperStats.scanned} | Sniper ${b.sniperStats.sniperSetups} | Choppy ${b.sniperStats.filteredChoppy}`;
-    el('statScanned').textContent=b.sniperStats.scanned;
-    el('statChoppy').textContent=b.sniperStats.filteredChoppy;
-    el('statRSI').textContent=b.sniperStats.filteredRSI;
-    el('statSniper').textContent=b.sniperStats.sniperSetups;
+  if(b.megaStats){
+    el('tradesPerMin').textContent=b.megaStats.tradesPerMin+' trades/min';
+    el('statTPM').textContent=b.megaStats.tradesPerMin;
+    el('statScanned').textContent=b.megaStats.scanned;
+    el('statMom').textContent=b.megaStats.momentum;
+    el('statOpen').textContent=(b.megaStats.tradesPerMin||0)+' / 3 max';
+    el('trailInfo').textContent=b.megaStats.momentum+' momentum | '+b.megaStats.tradesPerMin+' /min';
   }
   if(b.totalProfit!==undefined){
     const sign=b.totalProfit>=0?'+':'';
@@ -164,8 +166,8 @@ socket.on('balance',b=>{
   }
   if(b.unrealizedPnl!==undefined) el('detailUnreal').textContent=(b.unrealizedPnl>=0?'+':'')+'$'+b.unrealizedPnl.toFixed(3);
   if(b.consecutiveLosses!==undefined){
-    el('consecLoss').textContent=b.consecutiveLosses+' consec loss | Target 75% WR'+(b.consecutiveLosses>=2?' ⚠️':'');
-    el('consecLoss').className='text-[8px] '+(b.consecutiveLosses>=3?'text-red-400':'text-zinc-500');
+    el('consecLoss').textContent=b.consecutiveLosses+' consec loss | Need 60% WR'+(b.consecutiveLosses>=3?' ⚠️':'');
+    el('consecLoss').className='text-[8px] '+(b.consecutiveLosses>=5?'text-red-400':'text-zinc-500');
   }
 });
 socket.on('stats',s=>{
@@ -181,38 +183,32 @@ socket.on('stats',s=>{
     el('detailUnreal').textContent=(s.unrealizedPnl>=0?'+':'')+'$'+s.unrealizedPnl.toFixed(3);
     el('unrealPnl').textContent='Unreal: '+(s.unrealizedPnl>=0?'+':'')+'$'+s.unrealizedPnl.toFixed(3);
   }
-  if(s.sniperStats){
-    el('sniperScanned').textContent=`Scanned ${s.sniperStats.scanned} | Sniper ${s.sniperStats.sniperSetups}`;
-    el('statScanned').textContent=s.sniperStats.scanned;
-    el('statChoppy').textContent=s.sniperStats.filteredChoppy;
-    el('statRSI').textContent=s.sniperStats.filteredRSI;
-    el('statSniper').textContent=s.sniperStats.sniperSetups;
-    el('trailInfo').textContent=s.sniperStats.sniperSetups+' setups | '+s.trailingCount+' trail';
+  if(s.megaStats){
+    el('tradesPerMin').textContent=s.megaStats.tradesPerMin+' trades/min (target 5)';
+    el('statTPM').textContent=s.megaStats.tradesPerMin;
+    el('statScanned').textContent=s.megaStats.scanned;
+    el('statMom').textContent=s.megaStats.momentum;
+    el('statOpen').textContent=s.trailingCount+' / 3 max';
   }
-  const cdEl=el('cooldown');
-  if(s.consecutiveLosses>=1 && s.lastTradeAgo!==undefined){
-    const remaining = (s.consecutiveLosses>=1?120:45) - s.lastTradeAgo;
-    if(remaining>0) cdEl.textContent=`Cooldown ${remaining}s`;
-    else cdEl.textContent='Ready for sniper';
-  } else cdEl.textContent='Waiting perfect setup';
-  el('lastSniper').textContent=s.lastTradeAgo?`Last ${s.lastTradeAgo}s ago | 5-8 trades/day`:'Waiting...';
+  el('cooldown').textContent=s.lastTradeAgo?`Last ${s.lastTradeAgo}s ago | Cooldown 15s/5s`:'Ready for mega';
+  el('lastTrade').textContent=s.lastTradeAgo?`Last ${s.lastTradeAgo}s ago | ${s.megaStats? s.megaStats.tradesPerMin+' trades/min':''}`:'Waiting micro pump 0.12%...';
 });
 socket.on('positions',p=>{
   el('pos').innerHTML=p.length?p.map(x=>{
     const tr=x.trailing;
-    const trailHtml = tr ? `<div class="text-[9px] mt-1 ${tr.active?'text-violet-400':'text-zinc-500'}">${tr.active ? `🎯 TRAIL ON Peak ${ (tr.profitPeak||0).toFixed(3)}%` : `Sniper trail wait Act ${el('trailAct').value}%`}</div>` : '';
-    return `<div class="flex flex-col bg-[#0a0a12] p-2.5 rounded-xl mt-2 border ${(x.unrealizedPnl||0)>=0?'border-green-900/30':'border-red-900/30'}"><div class="flex justify-between"><span>${x.symbol} ${x.side} ${x.leverage||''}x</span><span class="${(x.unrealizedPnl||0)>=0?'profit':'loss'}">$${(x.unrealizedPnl||0).toFixed(3)} (${(x.percentage||0).toFixed(3)}%)</span></div>${trailHtml}</div>`;
-  }).join(''):'No positions - Sniper waits for 75% setup (patience = profit)';
+    const trailHtml = tr ? `<div class="text-[9px] mt-1 ${tr.active?'text-orange-400':'text-zinc-500'}">${tr.active ? `⚡ TRAIL ON Peak ${ (tr.profitPeak||0).toFixed(3)}%` : `Mega trail wait Act ${el('trailAct').value}%`}</div>` : '';
+    return `<div class="flex flex-col bg-[#1a0a12] p-2.5 rounded-xl mt-2 border ${(x.unrealizedPnl||0)>=0?'border-green-900/30':'border-red-900/30'}"><div class="flex justify-between"><span>${x.symbol} ${x.side} ${x.leverage||''}x</span><span class="${(x.unrealizedPnl||0)>=0?'profit':'loss'}">$${(x.unrealizedPnl||0).toFixed(3)} (${(x.percentage||0).toFixed(3)}%)</span></div>${trailHtml}</div>`;
+  }).join(''):'No positions - MEGA will open 3 parallel when volatile';
 });
-socket.on('newTrade',t=>{ el('hist').innerHTML=`<div class="bg-[#0a0a12] p-2.5 rounded-xl mt-2 flex justify-between border border-violet-900/20"><span>${t.pair} <b class="${t.side==='LONG'?'profit':'loss'}">${t.side}</b> @${t.entryPrice.toFixed(2)}</span><span class="text-violet-400">${t.confidence}% 🎯</span></div>`+el('hist').innerHTML; });
+socket.on('newTrade',t=>{ el('hist').innerHTML=`<div class="bg-[#1a0a12] p-2.5 rounded-xl mt-2 flex justify-between border border-orange-900/20"><span>${t.pair} <b class="${t.side==='LONG'?'profit':'loss'}">${t.side}</b> @${t.entryPrice.toFixed(2)}</span><span class="text-orange-400">${t.confidence}% ⚡</span></div>`+el('hist').innerHTML; });
 socket.on('tradeHistory',h=>{
   if(h.length>0) {
     let total=0; h.forEach(t=>{ if(t.profit) total+=t.profit; });
     el('histProfit').textContent=(total>=0?'+':'')+'$'+total.toFixed(3);
-    el('hist').innerHTML=h.slice(0,30).map(t=>{
+    el('hist').innerHTML=h.slice(0,40).map(t=>{
       const profitStr = t.profit!==undefined ? (t.profit>=0?'+':'')+'$'+t.profit.toFixed(3) : t.confidence+'%';
       const profitClass = (t.profit||0)>=0?'profit':'loss';
-      return `<div class="bg-[#0a0a12] p-2 rounded-xl mt-1.5 flex justify-between text-[10px]"><span>${t.pair} ${t.side} @${t.entryPrice.toFixed(1)} → ${t.exitPrice? t.exitPrice.toFixed(1):'OPEN'} (${t.status||'OPEN'})</span><span class="${profitClass} font-bold">${profitStr}</span></div>`;
+      return `<div class="bg-[#1a0a12] p-2 rounded-xl mt-1.5 flex justify-between text-[10px]"><span>${t.pair} ${t.side} @${t.entryPrice.toFixed(1)} → ${t.exitPrice? t.exitPrice.toFixed(1):'OPEN'} (${t.status||'OPEN'})</span><span class="${profitClass} font-bold">${profitStr}</span></div>`;
     }).join('');
   }
 });
@@ -220,20 +216,20 @@ socket.on('marketData',d=>{
   const vals=Object.values(d);
   const tableEl=document.getElementById('marketTable');
   if(tableEl) tableEl.innerHTML=vals.map(v=>{
-    const isSniper = v.confidence>=70;
-    return `<div class="bg-[#0a0a12] p-2.5 rounded-xl flex justify-between ${isSniper?'border-2 border-violet-500/50 bg-violet-950/20':(v.signal!=='HOLD'?'border border-yellow-500/20':'')}"><div><span class="font-bold">${v.pair.replace('/USDT','')}</span> <span class="text-[9px] text-zinc-500">${v.reason||''}</span></div><div class="text-right"><span class="${v.signal==='LONG'?'profit':(v.signal==='SHORT'?'loss':'text-zinc-500')} font-bold">${v.signal} ${v.confidence}%</span><br><span class="text-[8px] text-zinc-500">${v.rsi!==undefined?'RSI'+v.rsi.toFixed(0)+' GAP'+(v.emaGap||0).toFixed(3)+'%':''}</span></div></div>`;
+    const isMega = v.confidence>=58;
+    return `<div class="bg-[#1a0a12] p-2.5 rounded-xl flex justify-between ${isMega?'border-2 border-orange-500/50 bg-orange-950/20':(v.signal!=='HOLD'?'border border-yellow-500/20':'')}"><div><span class="font-bold">${v.pair.replace('/USDT','')}</span> <span class="text-[9px] text-zinc-500">${v.reason||''}</span></div><div class="text-right"><span class="${v.signal==='LONG'?'profit':(v.signal==='SHORT'?'loss':'text-zinc-500')} font-bold">${v.signal} ${v.confidence}%</span><br><span class="text-[8px] text-zinc-500">${v.rsi!==undefined?'RSI'+v.rsi.toFixed(0)+' MOM'+(v.mom1||0).toFixed(2)+'%':''}</span></div></div>`;
   }).join('');
 });
 socket.on('log',l=>{ el('logs').innerHTML=`<div class="log ${l.type||'info'}"><span class="text-zinc-600">${l.time}</span> ${l.msg}</div>`+el('logs').innerHTML; });
-socket.on('scanLogs',logs=>{ if(logs && logs.length) el('logs').innerHTML=logs.slice(0,50).map(l=>`<div class="log ${l.type||''}"><span class="text-zinc-600">${l.time}</span> ${l.msg}</div>`).join(''); });
-socket.on('botStatus',s=>{ el('botStatus').textContent=s; el('botStatus').className='text-[13px] font-black mono '+(s.includes('RUNNING')?'profit pulse':'text-zinc-400'); el('startBtn').textContent=s.includes('RUNNING')?'RUNNING 🎯':'START SNIPER'; });
+socket.on('scanLogs',logs=>{ if(logs && logs.length) el('logs').innerHTML=logs.slice(0,60).map(l=>`<div class="log ${l.type||''}"><span class="text-zinc-600">${l.time}</span> ${l.msg}</div>`).join(''); });
+socket.on('botStatus',s=>{ el('botStatus').textContent=s; el('botStatus').className='text-[13px] font-black mono '+(s.includes('RUNNING')?'profit pulse':'text-zinc-400'); el('startBtn').textContent=s.includes('RUNNING')?'RUNNING ⚡':'START MEGA'; });
 el('startBtn').onclick=()=>{fetch('/api/bot/start',{method:'POST'});};
 el('stopBtn').onclick=()=>{fetch('/api/bot/stop',{method:'POST'});};
-el('instantBtn').onclick=()=>{ el('instantBtn').textContent='SCANNING SNIPER...'; fetch('/api/instant-trade',{method:'POST'}).then(r=>r.json()).then(j=>{ el('instantBtn').textContent='🎯 SNIPER SCAN'; if(!j.success) alert(j.msg); }).catch(()=>{el('instantBtn').textContent='🎯 SNIPER SCAN';}); };
-el('resetBtn').onclick=()=>{ if(confirm('Reset & fresh start for 75% WR?')) fetch('/api/bot/reset-stats',{method:'POST'}).then(()=>location.reload()); };
+el('instantBtn').onclick=()=>{ el('instantBtn').textContent='SCANNING MEGA...'; fetch('/api/instant-trade',{method:'POST'}).then(r=>r.json()).then(j=>{ el('instantBtn').textContent='⚡ MEGA INSTANT'; if(!j.success) alert(j.msg); }).catch(()=>{el('instantBtn').textContent='⚡ MEGA INSTANT';}); };
+el('resetBtn').onclick=()=>{ if(confirm('Reset & fresh start for MEGA?')) fetch('/api/bot/reset-stats',{method:'POST'}).then(()=>location.reload()); };
 el('clearLog').onclick=()=>el('logs').innerHTML='Cleared...';
 el('resetStats').onclick=()=>{ if(confirm('Reset PNL?')) fetch('/api/bot/reset-stats',{method:'POST'}).then(()=>location.reload()); };
 updateNotional();
-fetch('/api/config').then(r=>r.json()).then(d=>{ if(d.config){ el('margin').value=d.config.marginUsdt; lev.value=d.config.leverage; el('tp').value=d.config.tpPercent; el('sl').value=d.config.slPercent; el('maxPos').value=d.config.maxPositions; el('confidence').value=d.config.confidenceThreshold; el('trailAct').value=d.config.trailActPercent; el('trailDist').value=d.config.trailDistancePercent; el('trailEnabled').checked=d.config.trailEnabled; if(el('dailyLoss')) el('dailyLoss').value=d.config.maxDailyLoss; if(el('cooldownSec')) el('cooldownSec').value=d.config.cooldownAfterLossSec; updateNotional(); }});
+fetch('/api/config').then(r=>r.json()).then(d=>{ if(d.config){ el('margin').value=d.config.marginUsdt; lev.value=d.config.leverage; el('tp').value=d.config.tpPercent; el('sl').value=d.config.slPercent; el('maxPos').value=d.config.maxPositions; el('confidence').value=d.config.confidenceThreshold; el('trailAct').value=d.config.trailActPercent; el('trailDist').value=d.config.trailDistancePercent; el('trailEnabled').checked=d.config.trailEnabled; updateNotional(); }});
 </script>
 <script>(function(){var loc=location.href.replace(/#.*$/,"");var ATTR_NAMES=["data-product-id","data-productid","data-product_id","product-id","productid","product_id","data-source-entity-id","source-entity-id","source_entity_id","data-product","data-metadata","data-meta"];var DATASET_KEYS=["productId","productid","product_id","sourceEntityId","sourceentityid","source_entity_id","product","metadata","meta"];function readProductId(value){if(typeof value!=="string"||value.length===0)return null;if(/^[0-9]{6,}$/.test(value))return value;var match=value.match(/(?:product(?:_|-)?id|source(?:_|-)?entity(?:_|-)?id)["'=:\s]+([0-9]{6,})/i);return match?match[1]:null}function extractProductId(start){for(var node=start;node&&node!==document.body;node=node.parentElement){for(var i=0;i<ATTR_NAMES.length;i++){var attrValue=node.getAttribute&&node.getAttribute(ATTR_NAMES[i]);var attrProductId=readProductId(attrValue);if(attrProductId)return attrProductId}var dataset=node.dataset||null;if(dataset){for(var j=0;j<DATASET_KEYS.length;j++){var dataValue=dataset[DATASET_KEYS[j]];var dataProductId=readProductId(dataValue);if(dataProductId)return dataProductId}}}return null}function isInlineMediaSlotElement(node){return !!(node&&node.getAttribute&&node.getAttribute("data-clippy-inline-media-slot")!==null)}function findInlineMediaSlot(start){for(var node=start;node&&node!==document.body;node=node.parentElement){if(isInlineMediaSlotElement(node))return node}return null}function readInlineMediaUrl(node){if(!node)return null;return node.getAttribute&&((node.getAttribute("data-clippy-inline-media-url")||node.getAttribute("data-url")||node.getAttribute("data_url")))||node.href||null}function stripHash(url){return String(url).replace(/#.*$/,"")}function urlsMatch(a,b){if(!a||!b)return false;try{return stripHash(new URL(a,loc).href)===stripHash(new URL(b,loc).href)}catch(_){return stripHash(a)===stripHash(b)}}function isFirstPartyReelUrl(value){try{var url=new URL(value,loc);if(url.protocol!=="https:")return false;var host=url.hostname.toLowerCase();var supported=host==="instagram.com"||host.endsWith(".instagram.com")||host==="facebook.com"||host.endsWith(".facebook.com");return supported&&/\/reels?\//i.test(url.pathname)}catch(_){return false}}function isInlineMediaUrlClick(node,href){var slot=findInlineMediaSlot(node);if(!slot)return false;var slotUrl=readInlineMediaUrl(slot);if(slotUrl)return urlsMatch(href,slotUrl);return isFirstPartyReelUrl(href)}function findDataHref(start){for(var node=start;node&&node!==document.body;node=node.parentElement){if(node.getAttribute){var href=node.getAttribute("data-href")||node.getAttribute("data-url");if(href)return{href:href,node:node}}}return null}var nativeOpen=window.open;window.open=function(url){if(parent!==window&&typeof url==="string"&&/^https?:\/\//.test(url)){parent.postMessage({type:"ecto:usercontent-link-click",href:url},"*");return null}return nativeOpen?nativeOpen.apply(window,arguments):null};document.addEventListener("click",function(e){var target=e.target instanceof Element?e.target:null;if(!target)return;if(parent===window)return;var a=target.closest?target.closest("a[href]"):null;if(a&&a.href&&/^https?:\/\//.test(a.href)&&a.href.replace(/#.*$/,"")!==loc){if(isInlineMediaUrlClick(a,a.href))return;var productId=extractProductId(target)||extractProductId(a);if(productId){e.preventDefault();parent.postMessage({type:"ecto-artifact-link-click",productId:productId},"*");return}e.preventDefault();parent.postMessage({type:"ecto:usercontent-link-click",href:a.href},"*");return}var dataHref=findDataHref(target);if(dataHref&&/^https?:\/\//.test(dataHref.href)&&dataHref.href.replace(/#.*$/,"")!==loc){if(isInlineMediaUrlClick(dataHref.node,dataHref.href))return;e.preventDefault();parent.postMessage({type:"ecto:usercontent-link-click",href:dataHref.href},"*")}},true)})();</script><script>(function(){var FOCUS_TYPE="ecto:artifact-focus-request";var CLOSE_TYPE="ecto:artifact-close-request";function focusArtifactDocument(){var body=document.body;if(!body)return;try{window.focus();}catch(e){}if(!body.hasAttribute("tabindex"))body.setAttribute("tabindex","-1");try{body.focus({preventScroll:true});}catch(e){try{body.focus();}catch(e2){}}}window.addEventListener("message",function(event){if(event.source!==window.parent)return;var data=event.data;if(!data||typeof data!=="object"||data.type!==FOCUS_TYPE)return;if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",focusArtifactDocument,{once:true});return;}focusArtifactDocument();});window.addEventListener("keydown",function(event){if(event.key!=="Escape")return;window.setTimeout(function(){if(event.defaultPrevented)return;window.parent.postMessage({type:CLOSE_TYPE},"*");},0);});})();</script></body></html>
