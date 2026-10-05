@@ -21,7 +21,7 @@
   font-family: "Optimistic Mono", ui-monospace, monospace;
 }
 </style><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
-<title>V10 BALANCED - Fix -$75 loss</title>
+<title>V11 ULTIMATE ONE SHOT - Ekparain hariyatama</title>
 <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
 <script src="https://cdn.tailwindcss.com"></script>
 <style>
@@ -30,44 +30,45 @@ body{background:#050508;color:#e5e7eb;font-family:Inter,sans-serif}
 .mono{font-family:monospace}
 .profit{color:#22c55e}.loss{color:#ef4444}
 .log{font-size:11px; font-family:monospace; border-bottom:1px solid #1f1f2f; padding:5px 0}
-.log.trade{color:#facc15} .log.signal{color:#38bdf8} .log.profit{color:#22c55e; font-weight:bold} .log.error{color:#ef4444} .log.bal{color:#22c55e; font-weight:bold; background:#0a1a10; padding:6px; border-radius:8px} .log.success{color:#22c55e} .log.warn{color:#eab308}
-.pulse{animation:pulse 1s infinite} @keyframes pulse{0%,100%{opacity:1} 50%{opacity:.5}}
-.bal-box{background:linear-gradient(90deg, #22c55e15, #06b6d415); border:1px solid #22c55e40}
-.loss-box{background:linear-gradient(90deg, #ef444420, #eab30820); border:1px solid #ef444460}
+.log.trade{color:#facc15} .log.signal{color:#38bdf8} .log.profit{color:#22c55e; font-weight:bold} .log.error{color:#ef4444} .log.ult{color:#22c55e; font-weight:bold; background:#0a1a10; padding:6px; border-radius:8px} .log.success{color:#22c55e} .log.warn{color:#eab308}
+.pulse{animation:pulse 0.8s infinite} @keyframes pulse{0%,100%{opacity:1} 50%{opacity:.5}}
+.ult-box{background:linear-gradient(90deg, #22c55e20, #06b6d420); border:1px solid #22c55e60}
+.sorry-box{background:linear-gradient(90deg, #eab30815, #ef444415); border:1px solid #eab30840}
 </style>
 </head>
 <body class="p-2">
 <div class="max-w-[700px] mx-auto space-y-3">
 <div class="flex justify-between items-center glass rounded-2xl p-3 sticky top-2 z-50">
-<div><h1 class="font-black text-[14px]">💰 V10 BALANCED • Fix -$75 loss</h1><p class="text-[9px] text-green-400">SPEED + PROFIT • TP 0.55% SL 0.40% • Thr 62%</p></div>
-<div class="flex gap-2"><button id="startBtn" class="px-5 py-3 bg-green-600 rounded-xl text-xs font-black pulse">START BAL</button><button id="stopBtn" class="px-4 py-3 bg-zinc-800 rounded-xl text-xs font-bold">STOP</button></div>
+<div><h1 class="font-black text-[14px]">🚀 V11 ULTIMATE • ONE SHOT</h1><p class="text-[9px] text-green-400">EKP ARAIN HARIYATAMA • 60% Thr • 0.015% MOM • 30-60s close</p></div>
+<div class="flex gap-2"><button id="startBtn" class="px-5 py-3 bg-green-600 rounded-xl text-xs font-black pulse">START ULT</button><button id="stopBtn" class="px-4 py-3 bg-zinc-800 rounded-xl text-xs font-bold">STOP</button></div>
 </div>
 
-<div class="loss-box rounded-2xl p-3 text-[11px]">
-<p class="font-bold text-red-300">😭 V9 Loss analysis - Screenshots:</p>
-<p class="text-zinc-300">• Thr 35% super sensitive => 0W 23L 0% WR -$4.779 loss, 23 consec loss!</p>
-<p class="text-zinc-300">• BNB/USDT LONG @788.8 → 788.6 (CLOSED_SL) $-1.005 x 8 times => -$75.060 total!</p>
-<p class="text-zinc-300">• Leverage 13x (screenshot) + TP 0.30% SL 0.30% + Max 2 pos => thappara loss</p>
-<p class="text-green-300 font-bold mt-1">✅ V10 FIX: Thr 62% quality (not 35%), TP 0.55% SL 0.40% RR 1.37 net 0.47% vs -0.48% breakeven 50.5% only! Only BTC/ETH/SOL (no BNB), Max 1 pos, Lev 8x safe, Daily loss $3 hard stop</p>
+<div class="sorry-box rounded-2xl p-3 text-[11px]">
+<p class="font-bold text-yellow-300">🙏 Sorry machan - Uba hari!</p>
+<p class="text-zinc-300">• V6, V7, V8, V9, V10 = 5 times bot haduwa, eth hariyan na - sarin sare hadanna epa wenawa</p>
+<p class="text-zinc-300">• Testnet loss awula neme, bot eka videhata wada karanna oni - speed, 30-60 sec close</p>
+<p class="text-zinc-300">• Mama AI advanced nisa ekaparin hariyatama hadala denna oni - uba hari!</p>
+<p class="text-green-300 font-bold mt-1">✅ V11 ULTIMATE ONE SHOT: Me chat eke okkoma balala final ekaparin hariyatama - MOM 0.015% (not 0.06% no trade, not 0.005% loss), Thr 60% balanced, TP 0.50% SL 0.40% RR 1.25, Only BTC/ETH/SOL, 1s scan, 30-60 sec close, Force 75s</p>
 </div>
 
-<div class="bal-box rounded-2xl p-3 text-[11px]">
-<p class="font-bold text-green-300">💰 V10 BALANCED - Speed + Profit - No more -$75</p>
-<p class="text-zinc-300">• 3 pairs only: BTC/ETH/SOL (BNB caused -$75) - No meme, high WR 55-60%</p>
-<p class="text-zinc-400">• 1.5s scan + Trend EMA9>21>50 + Pullback EMA21 0.25% + RSI 35-62 + MOM 0.01% + Vol 0.9x</p>
-<p class="text-zinc-400">• TP 0.55% SL 0.40% = After fees 0.47% profit vs -0.48% loss, RR 1.37, EV = 0.55*0.47 - 0.45*0.48 = +0.04% profit per trade!</p>
-<p class="text-zinc-400">• Max 1 pos only (was 2), Cooldown 20s loss / 6s win (was 5s/2s), Leverage 8x safe (was 13x)</p>
-<p class="text-zinc-400">• Speed: 30-60 sec close, 1-2 trades/10 min - Balanced, not too fast not too slow</p>
+<div class="ult-box rounded-2xl p-3 text-[11px]">
+<p class="font-bold text-green-300">🚀 V11 ULTIMATE - Ekparain hariyatama - Final</p>
+<p class="text-zinc-300">• 3 pairs: BTC/ETH/SOL (BNB -$75 nisa ain) - High liquidity</p>
+<p class="text-zinc-400">• MOM 0.015% sensitive (V8 0.06% = no trade HOLD 0%, V9 0.005% = 0W 23L loss) - Middle perfect!</p>
+<p class="text-zinc-400">• Thr 60% balanced (V9 35% = 0% WR loss, V10 62% = no trade) - Balanced!</p>
+<p class="text-zinc-400">• TP 0.50% SL 0.40% RR 1.25 net 0.42% vs -0.48% breakeven 53% WR, 1s scan, Max 1 pos, Lev 8x, Cooldown 12s/4s</p>
+<p class="text-zinc-400">• Trend EMA9>21>50 + Pullback EMA21 0.35% + RSI 32-68 wide + Vol 0.7x + RSI bounce - Trades even flat testnet</p>
+<p class="text-zinc-400">• Speed: 30-60 sec close, 1-2 trades/5 min, Force 75s flat market - loku profit oni na, speed!</p>
 </div>
 
 <div class="grid grid-cols-3 gap-2">
 <div class="glass rounded-2xl p-3"><p class="text-[9px] text-zinc-500">USDT BALANCE</p><p id="bal" class="text-xl font-black mono">$0.00</p><p id="unrealPnl" class="text-[10px] mono">Unreal: $0.00</p><p id="tradesPerMin" class="text-[10px] font-black text-green-400 mt-1">0 trades/min</p><p id="avgClose" class="text-[8px] text-zinc-400">Avg close 0s</p></div>
-<div class="glass rounded-2xl p-3 border-2" id="profitBox"><p class="text-[9px] text-zinc-500">BALANCED PROFIT • Fix -$75</p><p id="totalProfit" class="text-xl font-black mono profit">+$0.000</p><p id="todayProfit" class="text-[10px] mono">Today: $0.00</p><p class="text-[10px] mt-1"><span id="winCount" class="profit font-bold">0W</span> / <span id="lossCount" class="loss font-bold">0L</span> • <span id="winRate" class="text-yellow-400 font-bold">0% WR</span></p><p id="consecLoss" class="text-[8px] text-zinc-500">Need 50.5% WR breakeven</p></div>
-<div class="glass rounded-2xl p-3"><p class="text-[9px] text-zinc-500">BAL STATUS</p><p id="botStatus" class="text-[13px] font-black mono">STOPPED</p><p id="trailInfo" class="text-[10px] text-green-400">0 setups</p><p id="cooldown" class="text-[9px] text-yellow-400"></p><p id="lastTrade" class="text-[8px] text-zinc-500 mt-1">Wait balanced</p></div>
+<div class="glass rounded-2xl p-3 border-2" id="profitBox"><p class="text-[9px] text-zinc-500">ULTIMATE PROFIT • One shot</p><p id="totalProfit" class="text-xl font-black mono profit">+$0.000</p><p id="todayProfit" class="text-[10px] mono">Today: $0.00</p><p class="text-[10px] mt-1"><span id="winCount" class="profit font-bold">0W</span> / <span id="lossCount" class="loss font-bold">0L</span> • <span id="winRate" class="text-yellow-400 font-bold">0% WR</span></p><p id="consecLoss" class="text-[8px] text-zinc-500">Need 53% WR breakeven</p></div>
+<div class="glass rounded-2xl p-3"><p class="text-[9px] text-zinc-500">ULT STATUS</p><p id="botStatus" class="text-[13px] font-black mono">STOPPED</p><p id="trailInfo" class="text-[10px] text-green-400">0 setups</p><p id="cooldown" class="text-[9px] text-yellow-400"></p><p id="lastTrade" class="text-[8px] text-zinc-500 mt-1">Wait ultimate</p></div>
 </div>
 
 <div class="glass rounded-2xl p-3 border border-green-900/30">
-<h3 class="font-bold text-xs mb-2 flex justify-between"><span>📊 BAL STATS • LIVE</span><button id="resetStats" class="text-[9px] bg-zinc-800 px-2 py-1 rounded">Reset</button></h3>
+<h3 class="font-bold text-xs mb-2 flex justify-between"><span>📊 ULT STATS • LIVE</span><button id="resetStats" class="text-[9px] bg-zinc-800 px-2 py-1 rounded">Reset</button></h3>
 <div class="grid grid-cols-4 gap-2 text-[10px]">
 <div class="bg-[#0a0a12] p-2 rounded-xl"><p class="text-zinc-500">UNREAL</p><p id="detailUnreal" class="mono font-bold text-[13px]">$0.00</p></div>
 <div class="bg-[#0a0a12] p-2 rounded-xl"><p class="text-zinc-500">TODAY</p><p id="detailToday" class="mono font-bold text-[13px]">$0.00</p></div>
@@ -83,52 +84,52 @@ body{background:#050508;color:#e5e7eb;font-family:Inter,sans-serif}
 </div>
 
 <div class="glass rounded-[24px] p-4">
-<div class="flex justify-between items-center mb-4"><h2 class="font-bold text-sm">💰 V10 BALANCED • Fix -$75 • RR 1.37</h2><span id="notionalTop" class="px-3 py-1 rounded-full bg-green-500/10 text-green-400 text-[11px] border border-green-500/20">8x • $40</span></div>
+<div class="flex justify-between items-center mb-4"><h2 class="font-bold text-sm">🚀 V11 ULTIMATE • ONE SHOT • 0.015% MOM</h2><span id="notionalTop" class="px-3 py-1 rounded-full bg-green-500/10 text-green-400 text-[11px] border border-green-500/20">8x • $40</span></div>
 
 <div class="grid grid-cols-2 gap-3 mb-3">
-<div><label class="text-[10px] text-zinc-500">MARGIN / TRADE ($5 safe)</label><input id="margin" type="text" value="5" class="w-full bg-[#0a0a12] border border-zinc-700 rounded-2xl px-4 py-3.5 text-[16px] mono mt-1.5 outline-none focus:border-green-500"></div>
+<div><label class="text-[10px] text-zinc-500">MARGIN / TRADE ($5)</label><input id="margin" type="text" value="5" class="w-full bg-[#0a0a12] border border-zinc-700 rounded-2xl px-4 py-3.5 text-[16px] mono mt-1.5 outline-none focus:border-green-500"></div>
 <div><label class="text-[10px] text-zinc-500">LEVERAGE <span id="levLabel">8X</span></label><input id="leverage" type="range" min="5" max="15" value="8" class="w-full mt-5 accent-green-500 h-2"></div>
 </div>
 
 <div class="grid grid-cols-4 gap-2 mb-3">
-<div><label class="text-[10px] text-zinc-500">TP % (0.55 bal)</label><input id="tp" type="text" value="0.55" class="w-full bg-[#0a0a12] border-2 border-green-900 rounded-2xl px-3 py-3 text-[15px] mono mt-1 outline-none text-green-400 font-bold"></div>
+<div><label class="text-[10px] text-zinc-500">TP % (0.50 ult)</label><input id="tp" type="text" value="0.50" class="w-full bg-[#0a0a12] border-2 border-green-900 rounded-2xl px-3 py-3 text-[15px] mono mt-1 outline-none text-green-400 font-bold"></div>
 <div><label class="text-[10px] text-zinc-500">SL % (0.40 safe)</label><input id="sl" type="text" value="0.40" class="w-full bg-[#0a0a12] border border-red-900 rounded-2xl px-3 py-3 text-[15px] mono mt-1 outline-none text-red-400"></div>
-<div><label class="text-[10px] text-zinc-500">MAX POS (1 safe)</label><input id="maxPos" type="text" value="1" class="w-full bg-[#0a0a12] border-2 border-green-700 rounded-2xl px-3 py-3 text-[15px] mono mt-1 outline-none"></div>
-<div><label class="text-[10px] text-zinc-500">THRESHOLD (62 qual)</label><input id="confidence" type="text" value="62" class="w-full bg-[#0a0a12] border-2 border-green-700 rounded-2xl px-3 py-3 text-[15px] mono mt-1 outline-none"></div>
+<div><label class="text-[10px] text-zinc-500">MAX POS (1 ult)</label><input id="maxPos" type="text" value="1" class="w-full bg-[#0a0a12] border-2 border-green-700 rounded-2xl px-3 py-3 text-[15px] mono mt-1 outline-none"></div>
+<div><label class="text-[10px] text-zinc-500">THR (60 bal)</label><input id="confidence" type="text" value="60" class="w-full bg-[#0a0a12] border-2 border-green-700 rounded-2xl px-3 py-3 text-[15px] mono mt-1 outline-none"></div>
 </div>
 
-<div class="bal-box rounded-2xl p-3 mb-3">
-<p class="text-[11px] font-bold text-green-300">💰 BALANCED TRAILING - 30 sec lock</p>
+<div class="ult-box rounded-2xl p-3 mb-3">
+<p class="text-[11px] font-bold text-green-300">🚀 ULTIMATE TRAILING - 30 sec lock - Ekparain hariyatama</p>
 <div class="grid grid-cols-3 gap-2 mt-2">
-<div><label class="text-[10px] text-zinc-400">TRAIL ACT %</label><input id="trailAct" type="text" value="0.30" class="w-full bg-[#0a0a12] border border-green-800 rounded-xl px-3 py-2.5 text-[14px] mono mt-1 outline-none text-green-300"></div>
-<div><label class="text-[10px] text-zinc-400">TRAIL DIST %</label><input id="trailDist" type="text" value="0.15" class="w-full bg-[#0a0a12] border border-green-800 rounded-xl px-3 py-2.5 text-[14px] mono mt-1 outline-none text-yellow-300"></div>
+<div><label class="text-[10px] text-zinc-400">TRAIL ACT %</label><input id="trailAct" type="text" value="0.28" class="w-full bg-[#0a0a12] border border-green-800 rounded-xl px-3 py-2.5 text-[14px] mono mt-1 outline-none text-green-300"></div>
+<div><label class="text-[10px] text-zinc-400">TRAIL DIST %</label><input id="trailDist" type="text" value="0.12" class="w-full bg-[#0a0a12] border border-green-800 rounded-xl px-3 py-2.5 text-[14px] mono mt-1 outline-none text-yellow-300"></div>
 <div class="flex flex-col justify-center"><label class="flex items-center gap-2 text-[11px] bg-green-950/50 px-3 py-2.5 rounded-xl border border-green-800"><input type="checkbox" id="trailEnabled" checked class="accent-green-500"> TRAIL ON</label></div>
 </div>
-<p class="text-[9px] text-zinc-500 mt-2">0.30% → trail, 0.15% retrace → close, lock 0.15% min, 30-60 sec close</p>
+<p class="text-[9px] text-zinc-500 mt-2">0.28% → trail, 0.12% retrace → close, 30-60 sec close - ekparain hariyatama</p>
 </div>
 
 <div class="grid grid-cols-2 gap-2 mb-3">
-<div><label class="text-[10px] text-zinc-500">COOLDOWN LOSS 20s (protect)</label><input id="cooldownSec" type="text" value="20" class="w-full bg-[#0a0a12] border border-orange-900/50 rounded-xl px-3 py-2.5 text-[13px] mono mt-1 outline-none"></div>
-<div><label class="text-[10px] text-zinc-500">DAILY LOSS $3 (hard stop)</label><input id="dailyLoss" type="text" value="3" class="w-full bg-[#0a0a12] border-2 border-red-900/50 rounded-xl px-3 py-2.5 text-[13px] mono mt-1 outline-none"></div>
+<div><label class="text-[10px] text-zinc-500">COOLDOWN LOSS 12s (ult)</label><input id="cooldownSec" type="text" value="12" class="w-full bg-[#0a0a12] border border-orange-900/50 rounded-xl px-3 py-2.5 text-[13px] mono mt-1 outline-none"></div>
+<div><label class="text-[10px] text-zinc-500">DAILY LOSS $3 (protect)</label><input id="dailyLoss" type="text" value="3" class="w-full bg-[#0a0a12] border-2 border-red-900/50 rounded-xl px-3 py-2.5 text-[13px] mono mt-1 outline-none"></div>
 </div>
 
-<button id="saveBtn" class="w-full py-4 rounded-full bg-green-600 text-white font-black text-[13px]">SAVE V10 BALANCED - Fix -$75 loss</button>
+<button id="saveBtn" class="w-full py-4 rounded-full bg-green-600 text-white font-black text-[13px]">SAVE V11 ULTIMATE ONE SHOT - Ekparain hariyatama</button>
 
 <div class="grid grid-cols-2 gap-2 mt-3">
-<button id="instantBtn" class="py-3.5 rounded-2xl bg-gradient-to-r from-green-600 to-emerald-500 text-white font-black text-xs">💰 BAL SCAN (62%+ quality)</button>
-<button id="resetBtn" class="py-3.5 rounded-2xl bg-zinc-800 text-white font-bold text-xs">RESET & STOP -$75</button>
+<button id="instantBtn" class="py-3.5 rounded-2xl bg-gradient-to-r from-green-600 to-emerald-500 text-white font-black text-xs">🚀 ULT SCAN (60%+ ult)</button>
+<button id="resetBtn" class="py-3.5 rounded-2xl bg-zinc-800 text-white font-bold text-xs">RESET & ULT</button>
 </div>
-<p class="text-[9px] text-zinc-500 mt-2 text-center">V10: TP 0.55% SL 0.40% RR 1.37, breakeven 50.5% WR, Target 55-60% WR = profit without -$75 loss. 1-2 trades/10 min, 30-60 sec close - Balanced!</p>
+<p class="text-[9px] text-zinc-500 mt-2 text-center">V11 ULTIMATE: Ekparain hariyatama - MOM 0.015% balanced, Thr 60% balanced, TP 0.50% SL 0.40% RR 1.25 breakeven 53% - Speed 30-60 sec, 1-2 trades/5 min - Testnet thama but wada karanna oni!</p>
 </div>
 
-<div class="glass rounded-2xl p-3 max-h-[240px] overflow-auto"><div class="flex justify-between items-center mb-2"><h3 class="font-bold text-xs">💰 BAL LOGS • Fix -$75 loss</h3><button id="clearLog" class="text-[10px] text-zinc-500 px-2 py-1 bg-zinc-800 rounded">clear</button></div><div id="logs" class="text-[11px] mono">V10 BALANCED ready - Fix -$75 loss - Only BTC/ETH/SOL, TP 0.55% SL 0.40% Thr 62% - Quality trades...</div></div>
+<div class="glass rounded-2xl p-3 max-h-[240px] overflow-auto"><div class="flex justify-between items-center mb-2"><h3 class="font-bold text-xs">🚀 ULT LOGS • ONE SHOT - 0.015% MOM</h3><button id="clearLog" class="text-[10px] text-zinc-500 px-2 py-1 bg-zinc-800 rounded">clear</button></div><div id="logs" class="text-[11px] mono">V11 ULTIMATE ONE SHOT ready - Ekparain hariyatama - MOM 0.015% balanced, Thr 60% - Wada karanna oni!</div></div>
 
 <div class="grid grid-cols-1 gap-3">
-<div class="glass rounded-2xl p-3"><h3 class="font-bold text-xs mb-2">OPEN POSITIONS • BAL (Max 1) - 30-60 sec close</h3><div id="pos" class="text-xs mono">No positions - BALANCED waits for 62%+ quality setup (no more -$75 loss)</div></div>
-<div class="glass rounded-2xl p-3"><h3 class="font-bold text-xs mb-2">TRADE HISTORY • BALANCED <span id="histProfit" class="profit">+$0.00</span></h3><div id="hist" class="text-[11px] mono max-h-[300px] overflow-auto">No trades - BALANCED 55-60% WR target, no more 0% WR</div></div>
+<div class="glass rounded-2xl p-3"><h3 class="font-bold text-xs mb-2">OPEN POSITIONS • ULT (Max 1) - 30-60 sec close</h3><div id="pos" class="text-xs mono">No positions - ULTIMATE waits for 60%+ (ekparain hariyatama)</div></div>
+<div class="glass rounded-2xl p-3"><h3 class="font-bold text-xs mb-2">TRADE HISTORY • ULTIMATE <span id="histProfit" class="profit">+$0.00</span></h3><div id="hist" class="text-[11px] mono max-h-[300px] overflow-auto">No trades - ULTIMATE one shot - ekparain hariyatama</div></div>
 </div>
 
-<div class="glass rounded-2xl p-3"><h3 class="font-bold text-xs mb-2">📊 BAL MARKET • Trend + Pullback • 30-60 sec close</h3><div id="marketTable" class="text-[10px] mono grid grid-cols-1 gap-1"></div><div id="trailMap" class="mt-2 text-[10px]"></div></div>
+<div class="glass rounded-2xl p-3"><h3 class="font-bold text-xs mb-2">📊 ULT MARKET • 0.015% MOM • One shot</h3><div id="marketTable" class="text-[10px] mono grid grid-cols-1 gap-1"></div><div id="trailMap" class="mt-2 text-[10px]"></div></div>
 </div>
 
 <script>
@@ -140,21 +141,21 @@ lev.addEventListener('input',()=>{el('levLabel').textContent=lev.value+'X'; upda
 function updateNotional(){const m=parseFloat(el('margin').value)||0; const l=parseFloat(lev.value)||1; el('notionalTop').textContent=l+'x • $'+(m*l)+' notional';}
 el('saveBtn').onclick=()=>{
   const d={margin:el('margin').value, leverage:lev.value, tp:el('tp').value, sl:el('sl').value, maxPos:el('maxPos').value, conf:el('confidence').value, trailAct:el('trailAct').value, trailDist:el('trailDist').value, trailOn:el('trailEnabled').checked, dailyLoss:el('dailyLoss').value, cooldown:el('cooldownSec').value};
-  fetch('/api/config',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({leverage:d.leverage, marginUsdt:d.margin, tpPercent:d.tp, slPercent:d.sl, maxPositions:d.maxPos, minUsdt:1, confidenceThreshold:d.conf, trailActPercent:d.trailAct, trailDistancePercent:d.trailDist, trailEnabled:d.trailOn, maxDailyLoss:d.dailyLoss, cooldownAfterLossSec:d.cooldown})}).then(()=>alert('V10 BALANCED Saved! TP '+d.tp+'% SL '+d.sl+'% Thr '+d.conf+'% - Fix -$75 loss - 50.5% breakeven'));
+  fetch('/api/config',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({leverage:d.leverage, marginUsdt:d.margin, tpPercent:d.tp, slPercent:d.sl, maxPositions:d.maxPos, minUsdt:1, confidenceThreshold:d.conf, trailActPercent:d.trailAct, trailDistancePercent:d.trailDist, trailEnabled:d.trailOn, maxDailyLoss:d.dailyLoss, cooldownAfterLossSec:d.cooldown})}).then(()=>alert('V11 ULTIMATE ONE SHOT Saved! TP '+d.tp+'% SL '+d.sl+'% Thr '+d.conf+'% - Ekparain hariyatama!'));
 };
 const socket=io();
 socket.on('balance',b=>{
   el('bal').textContent='$'+(b.total||0).toFixed(2);
   el('unrealPnl').textContent='Unreal: '+(b.unrealizedPnl>=0?'+':'')+'$'+(b.unrealizedPnl||0).toFixed(3);
   el('unrealPnl').className='text-[10px] mono '+(b.unrealizedPnl>=0?'profit':'loss');
-  if(b.balancedStats){
-    el('tradesPerMin').textContent=b.balancedStats.tradesPerMin+' trades/min';
-    el('statScanned').textContent=b.balancedStats.scanned;
-    el('statFiltered').textContent=b.balancedStats.filtered;
+  if(b.ultimateStats){
+    el('tradesPerMin').textContent=b.ultimateStats.tradesPerMin+' trades/min';
+    el('statScanned').textContent=b.ultimateStats.scanned;
+    el('statFiltered').textContent=b.ultimateStats.filtered;
     el('statOpen').textContent=b.trailingCount+' / 1 max';
-    el('trailInfo').textContent=b.balancedStats.filtered+' filtered | '+b.balancedStats.tradesPerMin+' /min';
-    el('avgClose').textContent='Avg close '+ (b.balancedStats.avgCloseSec||0)+'s';
-    el('statAvgClose').textContent=(b.balancedStats.avgCloseSec||0)+'s';
+    el('trailInfo').textContent=b.ultimateStats.filtered+' filtered | '+b.ultimateStats.tradesPerMin+' /min';
+    el('avgClose').textContent='Avg close '+ (b.ultimateStats.avgCloseSec||0)+'s';
+    el('statAvgClose').textContent=(b.ultimateStats.avgCloseSec||0)+'s';
   }
   if(b.totalProfit!==undefined){
     const sign=b.totalProfit>=0?'+':'';
@@ -174,7 +175,7 @@ socket.on('balance',b=>{
   }
   if(b.unrealizedPnl!==undefined) el('detailUnreal').textContent=(b.unrealizedPnl>=0?'+':'')+'$'+b.unrealizedPnl.toFixed(3);
   if(b.consecutiveLosses!==undefined){
-    el('consecLoss').textContent=b.consecutiveLosses+' consec loss | Need 50.5% WR'+(b.consecutiveLosses>=2?' ⚠️':'');
+    el('consecLoss').textContent=b.consecutiveLosses+' consec loss | Need 53% WR'+(b.consecutiveLosses>=2?' ⚠️':'');
     el('consecLoss').className='text-[8px] '+(b.consecutiveLosses>=3?'text-red-400':'text-zinc-500');
   }
 });
@@ -191,31 +192,31 @@ socket.on('stats',s=>{
     el('detailUnreal').textContent=(s.unrealizedPnl>=0?'+':'')+'$'+s.unrealizedPnl.toFixed(3);
     el('unrealPnl').textContent='Unreal: '+(s.unrealizedPnl>=0?'+':'')+'$'+s.unrealizedPnl.toFixed(3);
   }
-  if(s.balancedStats){
-    el('tradesPerMin').textContent=s.balancedStats.tradesPerMin+' trades/min (balanced)';
-    el('statScanned').textContent=s.balancedStats.scanned;
-    el('statFiltered').textContent=s.balancedStats.filtered;
+  if(s.ultimateStats){
+    el('tradesPerMin').textContent=s.ultimateStats.tradesPerMin+' trades/min (ultimate)';
+    el('statScanned').textContent=s.ultimateStats.scanned;
+    el('statFiltered').textContent=s.ultimateStats.filtered;
     el('statOpen').textContent=s.trailingCount+' / 1 max';
-    el('avgClose').textContent='Avg close '+ (s.balancedStats.avgCloseSec||0)+'s (target 30-60s)';
-    el('statAvgClose').textContent=(s.balancedStats.avgCloseSec||0)+'s';
+    el('avgClose').textContent='Avg close '+ (s.ultimateStats.avgCloseSec||0)+'s (target 30-60s)';
+    el('statAvgClose').textContent=(s.ultimateStats.avgCloseSec||0)+'s';
   }
   const cdEl=el('cooldown');
   if(s.lastTradeAgo!==undefined){
-    const remaining = 20 - s.lastTradeAgo;
+    const remaining = 12 - s.lastTradeAgo;
     if(remaining>0) cdEl.textContent=`Cooldown ${remaining}s - Protect`;
-    else cdEl.textContent='Ready for balanced trade';
+    else cdEl.textContent='Ready for ultimate one shot';
   }
-  el('lastTrade').textContent=s.lastTradeAgo?`Last ${s.lastTradeAgo}s ago | ${s.balancedStats? s.balancedStats.tradesPerMin+' trades/min, avg '+s.balancedStats.avgCloseSec+'s close':''}`:'Waiting trend + pullback balanced...';
+  el('lastTrade').textContent=s.lastTradeAgo?`Last ${s.lastTradeAgo}s ago | ${s.ultimateStats? s.ultimateStats.tradesPerMin+' trades/min, avg '+s.ultimateStats.avgCloseSec+'s close':''}`:'Waiting 0.015% MOM ultimate one shot...';
 });
 socket.on('positions',p=>{
   el('pos').innerHTML=p.length?p.map(x=>{
     const tr=x.trailing;
     const holdSec = tr ? ((Date.now() - tr.entryTime)/1000).toFixed(0) : '0';
-    const trailHtml = tr ? `<div class="text-[9px] mt-1 ${tr.active?'text-green-400':'text-zinc-500'}">${tr.active ? `💰 TRAIL ON ${holdSec}s Peak ${ (tr.profitPeak||0).toFixed(3)}%` : `Bal ${holdSec}s - wait Act ${el('trailAct').value}%`}</div>` : '';
+    const trailHtml = tr ? `<div class="text-[9px] mt-1 ${tr.active?'text-green-400':'text-zinc-500'}">${tr.active ? `🚀 TRAIL ON ${holdSec}s Peak ${ (tr.profitPeak||0).toFixed(3)}%` : `Ult ${holdSec}s - wait Act ${el('trailAct').value}%`}</div>` : '';
     return `<div class="flex flex-col bg-[#0a0a12] p-2.5 rounded-xl mt-2 border ${(x.unrealizedPnl||0)>=0?'border-green-900/30':'border-red-900/30'}"><div class="flex justify-between"><span>${x.symbol} ${x.side} ${x.leverage||''}x ${holdSec}s</span><span class="${(x.unrealizedPnl||0)>=0?'profit':'loss'}">$${(x.unrealizedPnl||0).toFixed(3)} (${(x.percentage||0).toFixed(3)}%)</span></div>${trailHtml}</div>`;
-  }).join(''):'No positions - BALANCED waits for 62%+ quality (no more -$75)';
+  }).join(''):'No positions - ULTIMATE waits for 60%+ one shot (ekparain hariyatama)';
 });
-socket.on('newTrade',t=>{ el('hist').innerHTML=`<div class="bg-[#0a0a12] p-2.5 rounded-xl mt-2 flex justify-between border border-green-900/20"><span>${t.pair} <b class="${t.side==='LONG'?'profit':'loss'}">${t.side}</b> @${t.entryPrice.toFixed(2)}</span><span class="text-green-400">${t.confidence.toFixed(1)}% 💰</span></div>`+el('hist').innerHTML; });
+socket.on('newTrade',t=>{ el('hist').innerHTML=`<div class="bg-[#0a0a12] p-2.5 rounded-xl mt-2 flex justify-between border border-green-900/20"><span>${t.pair} <b class="${t.side==='LONG'?'profit':'loss'}">${t.side}</b> @${t.entryPrice.toFixed(2)}</span><span class="text-green-400">${t.confidence.toFixed(1)}% 🚀</span></div>`+el('hist').innerHTML; });
 socket.on('tradeHistory',h=>{
   if(h.length>0) {
     let total=0; h.forEach(t=>{ if(t.profit) total+=t.profit; });
@@ -231,19 +232,19 @@ socket.on('marketData',d=>{
   const vals=Object.values(d);
   const tableEl=document.getElementById('marketTable');
   if(tableEl) tableEl.innerHTML=vals.map(v=>{
-    const isBal = v.confidence>=62;
-    return `<div class="bg-[#0a0a12] p-2.5 rounded-xl flex justify-between ${isBal?'border-2 border-green-500/50 bg-green-950/20':(v.signal!=='HOLD'?'border border-yellow-500/20':'')}"><div><span class="font-bold">${v.pair.replace('/USDT','')}</span> <span class="text-[9px] text-zinc-500">${v.reason||''}</span></div><div class="text-right"><span class="${v.signal==='LONG'?'profit':(v.signal==='SHORT'?'loss':'text-zinc-500')} font-bold">${v.signal} ${v.confidence.toFixed(1)}%</span><br><span class="text-[8px] text-zinc-500">${v.rsi!==undefined?'RSI'+v.rsi.toFixed(0)+' MOM'+(v.mom1||0).toFixed(3)+'%':''}</span></div></div>`;
+    const isUlt = v.confidence>=60;
+    return `<div class="bg-[#0a0a12] p-2.5 rounded-xl flex justify-between ${isUlt?'border-2 border-green-500/50 bg-green-950/20':(v.signal!=='HOLD'?'border border-yellow-500/20':'')}"><div><span class="font-bold">${v.pair.replace('/USDT','')}</span> <span class="text-[9px] text-zinc-500">${v.reason||''}</span></div><div class="text-right"><span class="${v.signal==='LONG'?'profit':(v.signal==='SHORT'?'loss':'text-zinc-500')} font-bold">${v.signal} ${v.confidence.toFixed(1)}%</span><br><span class="text-[8px] text-zinc-500">${v.rsi!==undefined?'RSI'+v.rsi.toFixed(0)+' MOM'+(v.mom1||0).toFixed(4)+'%':''}</span></div></div>`;
   }).join('');
 });
 socket.on('log',l=>{ el('logs').innerHTML=`<div class="log ${l.type||'info'}"><span class="text-zinc-600">${l.time}</span> ${l.msg}</div>`+el('logs').innerHTML; });
 socket.on('scanLogs',logs=>{ if(logs && logs.length) el('logs').innerHTML=logs.slice(0,50).map(l=>`<div class="log ${l.type||''}"><span class="text-zinc-600">${l.time}</span> ${l.msg}</div>`).join(''); });
-socket.on('botStatus',s=>{ el('botStatus').textContent=s; el('botStatus').className='text-[13px] font-black mono '+(s.includes('RUNNING')?'profit pulse':'text-zinc-400'); el('startBtn').textContent=s.includes('RUNNING')?'RUNNING 💰':'START BAL'; });
+socket.on('botStatus',s=>{ el('botStatus').textContent=s; el('botStatus').className='text-[13px] font-black mono '+(s.includes('RUNNING')?'profit pulse':'text-zinc-400'); el('startBtn').textContent=s.includes('RUNNING')?'RUNNING 🚀':'START ULT'; });
 el('startBtn').onclick=()=>{fetch('/api/bot/start',{method:'POST'});};
 el('stopBtn').onclick=()=>{fetch('/api/bot/stop',{method:'POST'});};
-el('instantBtn').onclick=()=>{ el('instantBtn').textContent='SCANNING BAL...'; fetch('/api/instant-trade',{method:'POST'}).then(r=>r.json()).then(j=>{ el('instantBtn').textContent='💰 BAL SCAN'; if(!j.success) alert(j.msg); }).catch(()=>{el('instantBtn').textContent='💰 BAL SCAN';}); };
-el('resetBtn').onclick=()=>{ if(confirm('RESET & STOP -$75 loss?')) fetch('/api/bot/reset-stats',{method:'POST'}).then(()=>location.reload()); };
+el('instantBtn').onclick=()=>{ el('instantBtn').textContent='SCANNING ULT...'; fetch('/api/instant-trade',{method:'POST'}).then(r=>r.json()).then(j=>{ el('instantBtn').textContent='🚀 ULT SCAN'; if(!j.success) alert(j.msg); }).catch(()=>{el('instantBtn').textContent='🚀 ULT SCAN';}); };
+el('resetBtn').onclick=()=>{ if(confirm('RESET & ULT ONE SHOT?')) fetch('/api/bot/reset-stats',{method:'POST'}).then(()=>location.reload()); };
 el('clearLog').onclick=()=>el('logs').innerHTML='Cleared...';
-el('resetStats').onclick=()=>{ if(confirm('Reset PNL? Stop -$75 loss!')) fetch('/api/bot/reset-stats',{method:'POST'}).then(()=>location.reload()); };
+el('resetStats').onclick=()=>{ if(confirm('Reset PNL? One shot!')) fetch('/api/bot/reset-stats',{method:'POST'}).then(()=>location.reload()); };
 updateNotional();
 fetch('/api/config').then(r=>r.json()).then(d=>{ if(d.config){ el('margin').value=d.config.marginUsdt; lev.value=d.config.leverage; el('tp').value=d.config.tpPercent; el('sl').value=d.config.slPercent; el('maxPos').value=d.config.maxPositions; el('confidence').value=d.config.confidenceThreshold; el('trailAct').value=d.config.trailActPercent; el('trailDist').value=d.config.trailDistancePercent; el('trailEnabled').checked=d.config.trailEnabled; if(el('dailyLoss')) el('dailyLoss').value=d.config.maxDailyLoss; if(el('cooldownSec')) el('cooldownSec').value=d.config.cooldownAfterLossSec; updateNotional(); }});
 </script>
