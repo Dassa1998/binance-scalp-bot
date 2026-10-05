@@ -19,30 +19,32 @@ app.use(express.static(__dirname));
 
 const MODE = process.env.BINANCE_MODE || 'testnet';
 
-// V9 ULTRA SPEED FIX - Trade wenne na fix - super sensitive
+// V10 FINAL BALANCED - Speed + Profit - Fix -$75 loss
+// Lessons from V9: Thr 35% => 0W 23L 0% WR -$4.7, BNB SL $-1.005 x8 => -$75
+// Fix: Thr 62% (not 35%), TP 0.55% SL 0.40% RR 1.37, Only BTC/ETH/SOL (no BNB), Max 1 pos, Cooldown 20s/6s, Daily loss $3 hard stop
 let BOT_CONFIG = {
-  leverage: 10,
-  marginUsdt: 4,
-  tpPercent: 0.30,
-  slPercent: 0.30,
-  maxPositions: 2,
+  leverage: 8,
+  marginUsdt: 5,
+  tpPercent: 0.55,
+  slPercent: 0.40,
+  maxPositions: 1,
   minUsdt: 1,
   isRunning: false,
-  confidenceThreshold: 35,
-  ultraMode: true,
-  turboMode: true,
-  scanIntervalMs: 500,
-  trailActPercent: 0.15,
-  trailDistancePercent: 0.08,
+  confidenceThreshold: 62,
+  ultraMode: false,
+  turboMode: false,
+  scanIntervalMs: 1500,
+  trailActPercent: 0.30,
+  trailDistancePercent: 0.15,
   trailEnabled: true,
-  maxDailyLoss: 5,
-  cooldownAfterLossSec: 5,
-  cooldownAfterWinSec: 2,
-  speedMode: true,
-  forceTradeSec: 45
+  maxDailyLoss: 3,
+  cooldownAfterLossSec: 20,
+  cooldownAfterWinSec: 6,
+  balancedMode: true
 };
 
-const TOP_PAIRS = ['BTC/USDT','ETH/USDT','SOL/USDT','BNB/USDT','AVAX/USDT','LINK/USDT'];
+// ONLY 3 PAIRS - BTC/ETH/SOL highest WR - No BNB (BNB caused -$75 loss in V9)
+const TOP_PAIRS = ['BTC/USDT','ETH/USDT','SOL/USDT'];
 
 let exchange = null;
 let balance = { total: 0, free: 0, pnl: 0, status: 'disconnected', unrealizedPnl: 0 };
@@ -60,7 +62,7 @@ let trailingMap = {};
 let todayProfit = 0;
 let todayTrades = [];
 let consecutiveLosses = 0;
-let speedStats = { scanned: 0, micro: 0, tradesPerMin: 0, lastMinTrades: [], avgCloseSec: 0, closeTimes: [], forced: 0 };
+let balancedStats = { scanned: 0, filtered: 0, tradesPerMin: 0, lastMinTrades: [], avgCloseSec: 0, closeTimes: [] };
 
 function log(msg, type='info') {
   const entry = { time: new Date().toLocaleTimeString(), msg, type };
@@ -118,15 +120,15 @@ async function fetchBalance() {
     const openSymbols = positions.map(p=>p.symbol);
     Object.keys(trailingMap).forEach(sym => { if(!openSymbols.includes(sym)) delete trailingMap[sym]; });
     const now = Date.now();
-    speedStats.lastMinTrades = speedStats.lastMinTrades.filter(t=> now - t < 60000);
-    speedStats.tradesPerMin = speedStats.lastMinTrades.length;
-    if(speedStats.closeTimes.length > 0) {
-      speedStats.avgCloseSec = (speedStats.closeTimes.reduce((a,b)=>a+b,0) / speedStats.closeTimes.length).toFixed(1);
+    balancedStats.lastMinTrades = balancedStats.lastMinTrades.filter(t=> now - t < 60000);
+    balancedStats.tradesPerMin = balancedStats.lastMinTrades.length;
+    if(balancedStats.closeTimes.length > 0) {
+      balancedStats.avgCloseSec = (balancedStats.closeTimes.reduce((a,b)=>a+b,0) / balancedStats.closeTimes.length).toFixed(1);
     }
-    io.emit('balance', { ...balance, totalProfit, winCount, lossCount, totalTrades: tradeHistory.length, todayProfit, todayTradesCount: todayTrades.length, winRate: (winCount+lossCount)>0 ? (winCount/(winCount+lossCount)*100).toFixed(1) : 0, unrealizedPnl: totalPnl, consecutiveLosses, speedStats });
+    io.emit('balance', { ...balance, totalProfit, winCount, lossCount, totalTrades: tradeHistory.length, todayProfit, todayTradesCount: todayTrades.length, winRate: (winCount+lossCount)>0 ? (winCount/(winCount+lossCount)*100).toFixed(1) : 0, unrealizedPnl: totalPnl, consecutiveLosses, balancedStats });
     io.emit('positions', positions.map(p=> ({...p, trailing: trailingMap[p.symbol] || null})) );
   } catch(e) {
-    io.emit('balance', { ...balance, status: 'connected', totalProfit, winCount, lossCount, totalTrades: tradeHistory.length, todayProfit, todayTradesCount: todayTrades.length, winRate: (winCount+lossCount)>0 ? (winCount/(winCount+lossCount)*100).toFixed(1) : 0, unrealizedPnl: balance.pnl, consecutiveLosses, speedStats });
+    io.emit('balance', { ...balance, status: 'connected', totalProfit, winCount, lossCount, totalTrades: tradeHistory.length, todayProfit, todayTradesCount: todayTrades.length, winRate: (winCount+lossCount)>0 ? (winCount/(winCount+lossCount)*100).toFixed(1) : 0, unrealizedPnl: balance.pnl, consecutiveLosses, balancedStats });
     io.emit('positions', positions.map(p=> ({...p, trailing: trailingMap[p.symbol] || null})) );
   }
 }
@@ -153,76 +155,73 @@ function rsiCalc(closes) {
   return 100 - (100/(1+rs));
 }
 
-// V9 FIX - Trade wenne na - super sensitive for testnet low volatility
-// Old V8 required MOM 0.06% + micro 0.08% but testnet MOM 0.00% => no trade
-// Fix: MOM 0.005% (10x lower), RSI 25-75 wide, vol 0.5, no strict trend, confidence 35%
-// Plus RSI bounce: RSI<35 => LONG, RSI>65 => SHORT even if MOM 0
-// Plus FORCE TRADE: if no trade 45 sec, take best RSI deviation
-function calculateSpeedFixSignal(candles, pair) {
-  speedStats.scanned++;
-  if(candles.length < 15) return { signal: 'HOLD', confidence: 0, reason: 'wait' };
+// V10 BALANCED - Fix -$75 loss from V9
+// V9 fail: Thr 35% super sensitive + TP 0.30% + BNB + 13x lev => 0W 23L 0% WR -$4.7, BNB SL x8 => -$75
+// V10 fix:
+// - Thr 62% (not 35%) => quality trades only, target 55-60% WR
+// - TP 0.55% SL 0.40% => net 0.47% vs -0.48%, RR 1.37, breakeven 50.5% WR only! (was 60% WR need)
+// - Only BTC/ETH/SOL (no BNB/AVAX/LINK) => BNB caused -$75
+// - Max 1 pos only (was 2) => no parallel loss
+// - Leverage 8x safe (was 13x in screenshot) => less liquidation
+// - Cooldown 20s loss / 6s win (was 5s/2s) => prevent revenge trading
+// - Speed: 1.5s scan (was 0.5s) => still fast but not crazy, 30-60 sec close target
+function calculateBalancedSignal(candles, pair) {
+  balancedStats.scanned++;
+  if(candles.length < 20) return { signal: 'HOLD', confidence: 0, reason: 'wait' };
   const closes = candles.map(c => c[4]);
   const volumes = candles.map(c => c[5]);
   const last = closes.length-1;
   const price = closes[last];
   const prev1 = closes[Math.max(0,last-1)];
   const prev2 = closes[Math.max(0,last-2)];
-  const prev3 = closes[Math.max(0,last-3)];
   
   const mom1 = ((price - prev1)/prev1)*100;
   const mom2 = ((price - prev2)/prev2)*100;
-  const mom3 = ((price - prev3)/prev3)*100;
   const vol = volumes[last];
-  const volAvg = volumes.slice(-10).reduce((a,b)=>a+b,0)/10;
+  const volAvg = volumes.slice(-15).reduce((a,b)=>a+b,0)/15;
   const volRatio = vol / (volAvg || 1);
   
-  const e9 = ema(closes,9); const e21 = ema(closes,21);
-  const e9Now = e9[last], e21Now = e21[last];
+  const e9 = ema(closes,9); const e21 = ema(closes,21); const e50 = ema(closes,50);
+  const e9Now = e9[last], e21Now = e21[last], e50Now = e50[last];
   const rsi = rsiCalc(closes);
   const emaGap = Math.abs(e9Now - e21Now) / price * 100;
-  const trendUp = e9Now > e21Now;
-  const trendDown = e9Now < e21Now;
+  const distEma21 = Math.abs(price - e21Now) / price * 100;
+  
+  const trendUp = e9Now > e21Now && e21Now > e50Now;
+  const trendDown = e9Now < e21Now && e21Now < e50Now;
+  const nearEma21 = distEma21 < 0.25;
 
   let signal='HOLD', confidence=0, reason='';
 
-  // SUPER SENSITIVE: Any tiny momentum 0.005% + RSI 25-75
-  if(rsi >= 25 && rsi <= 75 && volRatio > 0.5) {
-    // LONG: tiny up momentum or RSI oversold bounce
-    if((Math.abs(mom1) > 0.005 || Math.abs(mom2) > 0.008 || rsi < 38) && (trendUp || rsi < 42 || mom1 > 0)) {
-      if(mom1 > -0.02 || rsi < 40) { // allow even slight down if RSI low
-        confidence = 40 + Math.min(30, Math.abs(mom1)*200 + Math.abs(mom2)*100 + volRatio*5 + emaGap*200);
-        if(rsi < 35) confidence += 15; // oversold bounce high conf
-        if(rsi >= 30 && rsi <= 50) confidence += 8;
-        if(volRatio > 1.0) confidence += 5;
-        if(trendUp) confidence += 5;
-        signal='LONG';
-        reason=`FIX LONG MOM ${mom1.toFixed(4)}% M2 ${mom2.toFixed(4)}% RSI ${rsi.toFixed(0)} VOL x${volRatio.toFixed(2)} GAP ${emaGap.toFixed(4)}% ${rsi<35?'RSI OVERSOLD BOUNCE':''}`;
-        if(rsi < 35) speedStats.micro++;
-      }
-    }
-    // SHORT
-    if(signal==='HOLD' && (Math.abs(mom1) > 0.005 || Math.abs(mom2) > 0.008 || rsi > 62)) {
-      if(mom1 < 0.02 || rsi > 60) {
-        confidence = 40 + Math.min(30, Math.abs(mom1)*200 + Math.abs(mom2)*100 + volRatio*5 + emaGap*200);
-        if(rsi > 65) confidence += 15;
-        if(rsi >= 50 && rsi <= 70) confidence += 8;
-        if(volRatio > 1.0) confidence += 5;
-        if(trendDown) confidence += 5;
-        signal='SHORT';
-        reason=`FIX SHORT MOM ${mom1.toFixed(4)}% RSI ${rsi.toFixed(0)} VOL x${volRatio.toFixed(2)} ${rsi>65?'RSI OVERBOUGHT':''}`;
-      }
-    }
+  // BALANCED LONG - trend + pullback + momentum + volume
+  if(trendUp && nearEma21 && rsi >= 35 && rsi <= 62 && volRatio > 0.9 && mom1 > 0.01) {
+    confidence = 58 + Math.min(25, Math.abs(mom1)*120 + volRatio*6 + emaGap*100);
+    if(rsi >= 42 && rsi <= 55) confidence += 6;
+    if(volRatio > 1.2) confidence += 4;
+    if(mom1 > 0.03 && mom2 > 0.02) confidence += 5;
+    signal='LONG';
+    reason=`BAL LONG TREND UP GAP ${emaGap.toFixed(4)}% MOM ${mom1.toFixed(4)}% M2 ${mom2.toFixed(4)}% RSI ${rsi.toFixed(0)} VOL x${volRatio.toFixed(2)} EMA21 ${distEma21.toFixed(4)}%`;
   }
-  
-  // If still HOLD, show why but with low threshold info
-  if(signal==='HOLD') {
-    reason=`WAIT FIX MOM ${mom1.toFixed(4)}% M2 ${mom2.toFixed(4)}% RSI ${rsi.toFixed(0)} GAP ${emaGap.toFixed(4)}% VOL x${volRatio.toFixed(2)} - Need MOM>0.005% RSI 25-75`;
+  // BALANCED SHORT
+  else if(trendDown && nearEma21 && rsi >= 38 && rsi <= 65 && volRatio > 0.9 && mom1 < -0.01) {
+    confidence = 58 + Math.min(25, Math.abs(mom1)*120 + volRatio*6 + emaGap*100);
+    if(rsi >= 45 && rsi <= 60) confidence += 6;
+    if(volRatio > 1.2) confidence += 4;
+    if(mom1 < -0.03 && mom2 < -0.02) confidence += 5;
+    signal='SHORT';
+    reason=`BAL SHORT TREND DOWN GAP ${emaGap.toFixed(4)}% MOM ${mom1.toFixed(4)}% RSI ${rsi.toFixed(0)} VOL x${volRatio.toFixed(2)}`;
+  }
+  else {
+    balancedStats.filtered++;
+    if(!trendUp && !trendDown) reason=`WAIT NO TREND GAP ${emaGap.toFixed(4)}% RSI ${rsi.toFixed(0)}`;
+    else if(!nearEma21) reason=`WAIT PULLBACK EMA21 ${distEma21.toFixed(4)}% RSI ${rsi.toFixed(0)}`;
+    else reason=`WAIT MOM ${mom1.toFixed(4)}% RSI ${rsi.toFixed(0)} VOL x${volRatio.toFixed(2)} GAP ${emaGap.toFixed(4)}%`;
   }
 
-  return { signal, confidence: Math.min(88, Math.max(0, confidence)), price, rsi, mom1, mom2, mom3, emaGap, volRatio, reason, trendUp, trendDown };
+  return { signal, confidence: Math.min(90, confidence), price, rsi, mom1, mom2, emaGap, volRatio, distEma21, reason, trendUp, trendDown };
 }
 
-async function executeTrade(pair, signal, confidence, isManual=false, isForced=false) {
+async function executeTrade(pair, signal, confidence, isManual=false) {
   if(!exchange) return;
   if(!BOT_CONFIG.isRunning && !isManual) return;
   if(!isManual && positions.length >= BOT_CONFIG.maxPositions) return;
@@ -233,10 +232,15 @@ async function executeTrade(pair, signal, confidence, isManual=false, isForced=f
     if(now - lastWinTime < BOT_CONFIG.cooldownAfterWinSec*1000) return;
   }
   if(todayProfit <= -BOT_CONFIG.maxDailyLoss) {
-    log(`🛑 DAILY LOSS $${BOT_CONFIG.maxDailyLoss} STOP`, 'error');
+    log(`🛑 DAILY LOSS $${BOT_CONFIG.maxDailyLoss} HIT - STOP TODAY - Capital protected!`, 'error');
     BOT_CONFIG.isRunning = false;
     io.emit('botStatus','STOPPED_DAILY_LOSS');
     return;
+  }
+  if(consecutiveLosses >= 3 && !isManual) {
+    log(`⚠️ 3 consec loss, threshold 62% -> 75% + cooldown 60s for safety`, 'warn');
+    BOT_CONFIG.confidenceThreshold = 75;
+    lastLossTime = now + 30000; // extra 30s cooldown
   }
 
   try {
@@ -248,8 +252,7 @@ async function executeTrade(pair, signal, confidence, isManual=false, isForced=f
     try { await exchange.setLeverage(BOT_CONFIG.leverage, symbol); await exchange.setMarginMode('ISOLATED', symbol); } catch(e){}
     const side = signal === 'LONG' ? 'buy' : 'sell';
     const entryTime = Date.now();
-    const forcedTag = isForced ? ' FORCED' : '';
-    log(`⚡${forcedTag} FIX ${side.toUpperCase()} ${symbol} @${price.toFixed(4)} ${BOT_CONFIG.leverage}x TP ${BOT_CONFIG.tpPercent}% SL ${BOT_CONFIG.slPercent}% Conf ${confidence}% - 20 sec close target`, 'trade');
+    log(`💰 BALANCED ${side.toUpperCase()} ${symbol} @${price.toFixed(4)} ${BOT_CONFIG.leverage}x TP ${BOT_CONFIG.tpPercent}% SL ${BOT_CONFIG.slPercent}% Conf ${confidence}% - RR 1.37, breakeven 50%`, 'trade');
     const order = await exchange.createMarketOrder(symbol, side, qty);
     const tpPrice = signal==='LONG' ? price*(1+BOT_CONFIG.tpPercent/100) : price*(1-BOT_CONFIG.tpPercent/100);
     const slPrice = signal==='LONG' ? price*(1-BOT_CONFIG.slPercent/100) : price*(1+BOT_CONFIG.slPercent/100);
@@ -257,12 +260,11 @@ async function executeTrade(pair, signal, confidence, isManual=false, isForced=f
       await exchange.createOrder(symbol, 'TAKE_PROFIT_MARKET', signal==='LONG'?'sell':'buy', qty, undefined, { stopPrice: tpPrice, closePosition: true });
       await exchange.createOrder(symbol, 'STOP_MARKET', signal==='LONG'?'sell':'buy', qty, undefined, { stopPrice: slPrice, closePosition: true });
     } catch(e){}
-    const trade = { id: order.id, pair: symbol, side: signal, entryPrice: price, qty, leverage: BOT_CONFIG.leverage, tp: tpPrice, sl: slPrice, confidence, timestamp: new Date().toISOString(), status: 'OPEN', pnl: 0, entryTime, speed: true, forced: isForced };
+    const trade = { id: order.id, pair: symbol, side: signal, entryPrice: price, qty, leverage: BOT_CONFIG.leverage, tp: tpPrice, sl: slPrice, confidence, timestamp: new Date().toISOString(), status: 'OPEN', pnl: 0, entryTime };
     tradeHistory.unshift(trade); if(tradeHistory.length>150) tradeHistory.pop();
     todayTrades.unshift(trade);
     lastTradeTime = now;
-    speedStats.lastMinTrades.push(now);
-    if(isForced) speedStats.forced++;
+    balancedStats.lastMinTrades.push(now);
     trailingMap[symbol] = { active: false, maxPrice: price, minPrice: price, stopPrice: null, entryPrice: price, side: signal, profitPeak: 0, entryTime };
     io.emit('newTrade', trade); io.emit('tradeHistory', tradeHistory);
     fetchBalance();
@@ -287,7 +289,7 @@ async function checkAutoCloseAndTrailing() {
       trail.active = true;
       if(side==='long') trail.stopPrice = trail.maxPrice * (1 - BOT_CONFIG.trailDistancePercent/100);
       else trail.stopPrice = trail.minPrice * (1 + BOT_CONFIG.trailDistancePercent/100);
-      log(`🟢 FIX TRAIL ACT ${symbol} ${pnlPercent.toFixed(3)}%`, 'profit');
+      log(`🟢 BAL TRAIL ACT ${symbol} ${pnlPercent.toFixed(3)}%`, 'profit');
     }
     if(trail.active) {
       if(side==='long') {
@@ -298,9 +300,9 @@ async function checkAutoCloseAndTrailing() {
             await exchange.createMarketOrder(symbol, 'sell', Math.abs(pos.contracts), undefined, { reduceOnly: true });
             const profit = unreal; totalProfit += profit; todayProfit += profit;
             const holdSec = (Date.now() - (trail.entryTime||Date.now()))/1000;
-            speedStats.closeTimes.push(holdSec); if(speedStats.closeTimes.length>20) speedStats.closeTimes.shift();
-            if(profit>0) { winCount++; consecutiveLosses=0; lastWinTime=Date.now(); } else { lossCount++; consecutiveLosses++; lastLossTime=Date.now(); }
-            log(`✅ FIX TRAIL CLOSE ${symbol} ${holdSec.toFixed(0)}s Peak ${trail.profitPeak.toFixed(3)}% $${profit.toFixed(3)}`, 'profit');
+            balancedStats.closeTimes.push(holdSec); if(balancedStats.closeTimes.length>20) balancedStats.closeTimes.shift();
+            if(profit>0) { winCount++; consecutiveLosses=0; lastWinTime=Date.now(); BOT_CONFIG.confidenceThreshold=62; } else { lossCount++; consecutiveLosses++; lastLossTime=Date.now(); }
+            log(`✅ BAL TRAIL CLOSE ${symbol} ${holdSec.toFixed(0)}s Peak ${trail.profitPeak.toFixed(3)}% $${profit.toFixed(3)}`, 'profit');
             delete trailingMap[symbol];
             tradeHistory.forEach(t=>{ if(t.pair===symbol && t.status==='OPEN') { t.status='CLOSED_TRAIL'; t.exitPrice=mark; t.profit=profit; t.holdSec=holdSec; } });
           } catch(e){}
@@ -314,9 +316,9 @@ async function checkAutoCloseAndTrailing() {
             await exchange.createMarketOrder(symbol, 'buy', Math.abs(pos.contracts), undefined, { reduceOnly: true });
             const profit = unreal; totalProfit += profit; todayProfit += profit;
             const holdSec = (Date.now() - (trail.entryTime||Date.now()))/1000;
-            speedStats.closeTimes.push(holdSec); if(speedStats.closeTimes.length>20) speedStats.closeTimes.shift();
-            if(profit>0) { winCount++; consecutiveLosses=0; lastWinTime=Date.now(); } else { lossCount++; consecutiveLosses++; lastLossTime=Date.now(); }
-            log(`✅ FIX TRAIL CLOSE SHORT ${symbol} ${holdSec.toFixed(0)}s $${profit.toFixed(3)}`, 'profit');
+            balancedStats.closeTimes.push(holdSec); if(balancedStats.closeTimes.length>20) balancedStats.closeTimes.shift();
+            if(profit>0) { winCount++; consecutiveLosses=0; lastWinTime=Date.now(); BOT_CONFIG.confidenceThreshold=62; } else { lossCount++; consecutiveLosses++; lastLossTime=Date.now(); }
+            log(`✅ BAL TRAIL CLOSE SHORT ${symbol} ${holdSec.toFixed(0)}s $${profit.toFixed(3)}`, 'profit');
             delete trailingMap[symbol];
             tradeHistory.forEach(t=>{ if(t.pair===symbol && t.status==='OPEN') { t.status='CLOSED_TRAIL'; t.exitPrice=mark; t.profit=profit; t.holdSec=holdSec; } });
           } catch(e){}
@@ -329,9 +331,9 @@ async function checkAutoCloseAndTrailing() {
         await exchange.createMarketOrder(symbol, side==='long'?'sell':'buy', Math.abs(pos.contracts), undefined, { reduceOnly: true });
         const profit = unreal; totalProfit += profit; todayProfit += profit;
         const holdSec = (Date.now() - (trail.entryTime||Date.now()))/1000;
-        speedStats.closeTimes.push(holdSec); if(speedStats.closeTimes.length>20) speedStats.closeTimes.shift();
-        if(profit>0) { winCount++; consecutiveLosses=0; lastWinTime=Date.now(); } else { lossCount++; consecutiveLosses++; lastLossTime=Date.now(); }
-        log(`✅ FIX TP CLOSE ${symbol} ${pnlPercent.toFixed(3)}% ${holdSec.toFixed(0)}s $${profit.toFixed(3)}`, 'profit');
+        balancedStats.closeTimes.push(holdSec); if(balancedStats.closeTimes.length>20) balancedStats.closeTimes.shift();
+        if(profit>0) { winCount++; consecutiveLosses=0; lastWinTime=Date.now(); BOT_CONFIG.confidenceThreshold=62; } else { lossCount++; consecutiveLosses++; lastLossTime=Date.now(); }
+        log(`✅ BAL TP CLOSE ${symbol} ${pnlPercent.toFixed(3)}% ${holdSec.toFixed(0)}s $${profit.toFixed(3)}`, 'profit');
         delete trailingMap[symbol];
         tradeHistory.forEach(t=>{ if(t.pair===symbol && t.status==='OPEN') { t.status='CLOSED_TP'; t.exitPrice=mark; t.profit=profit; t.holdSec=holdSec; } });
       } catch(e){}
@@ -341,8 +343,8 @@ async function checkAutoCloseAndTrailing() {
         await exchange.createMarketOrder(symbol, side==='long'?'sell':'buy', Math.abs(pos.contracts), undefined, { reduceOnly: true });
         const profit = unreal; totalProfit += profit; todayProfit += profit; lossCount++; consecutiveLosses++; lastLossTime=Date.now();
         const holdSec = (Date.now() - (trail.entryTime||Date.now()))/1000;
-        speedStats.closeTimes.push(holdSec); if(speedStats.closeTimes.length>20) speedStats.closeTimes.shift();
-        log(`🛑 FIX SL CLOSE ${symbol} ${pnlPercent.toFixed(3)}% ${holdSec.toFixed(0)}s $${profit.toFixed(3)}`, 'error');
+        balancedStats.closeTimes.push(holdSec); if(balancedStats.closeTimes.length>20) balancedStats.closeTimes.shift();
+        log(`🛑 BAL SL CLOSE ${symbol} ${pnlPercent.toFixed(3)}% ${holdSec.toFixed(0)}s $${profit.toFixed(3)}`, 'error');
         delete trailingMap[symbol];
         tradeHistory.forEach(t=>{ if(t.pair===symbol && t.status==='OPEN') { t.status='CLOSED_SL'; t.exitPrice=mark; t.profit=profit; t.holdSec=holdSec; } });
       } catch(e){}
@@ -355,54 +357,37 @@ async function startScanner() {
   if(!exchange) return;
   if(scanning) return;
   scanning = true;
-  log(`⚡ V9 FIX STARTED - Trade wenne na FIX - TP ${BOT_CONFIG.tpPercent}% SL ${BOT_CONFIG.slPercent}% Thr ${BOT_CONFIG.confidenceThreshold}% 0.5s scan`, 'success');
-  log(`🔧 FIX: MOM 0.005% (was 0.06%), RSI 25-75 wide, threshold 35% (was 60%), FORCE trade 45 sec`, 'info');
-  log(`💨 SUPER SENSITIVE for testnet low volatility - will trade even MOM 0.005%`, 'warn');
-  setInterval(checkAutoCloseAndTrailing, 400);
+  log(`💰 V10 BALANCED STARTED - Fix -$75 loss - TP ${BOT_CONFIG.tpPercent}% SL ${BOT_CONFIG.slPercent}% Thr ${BOT_CONFIG.confidenceThreshold}% 1.5s scan - RR 1.37`, 'success');
+  log(`🔧 FIX V9 FAIL: Thr 35% => 0W 23L 0% WR -$4.7, BNB SL x8 => -$75, Lev 13x`, 'error');
+  log(`✅ V10 FIX: Thr 62% quality, TP 0.55% SL 0.40% net 0.47% vs -0.48% breakeven 50.5%, Only BTC/ETH/SOL, Max 1 pos, Lev 8x safe`, 'success');
+  setInterval(checkAutoCloseAndTrailing, 800);
   setInterval(async () => {
     if(!BOT_CONFIG.isRunning) return;
-    let bestPair = null;
-    let bestAnalysis = null;
-    let bestConf = 0;
-    
     for(let i=0;i<TOP_PAIRS.length;i++){
       const pair = TOP_PAIRS[i];
       try {
-        const candles = await exchange.fetchOHLCV(pair, '1m', undefined, 25);
-        const analysis = calculateSpeedFixSignal(candles, pair);
+        const candles = await exchange.fetchOHLCV(pair, '1m', undefined, 30);
+        const analysis = calculateBalancedSignal(candles, pair);
         marketData[pair] = { ...analysis, pair, lastUpdate: Date.now() };
-        if(analysis.confidence > bestConf && analysis.signal !== 'HOLD') {
-          bestConf = analysis.confidence;
-          bestPair = pair;
-          bestAnalysis = analysis;
-        }
         if(analysis.signal !== 'HOLD' && analysis.confidence >= BOT_CONFIG.confidenceThreshold){
-          log(`⚡ ${pair} ${analysis.signal} ${analysis.confidence}% ${analysis.reason}`, 'signal');
+          log(`💰 ${pair} ${analysis.signal} ${analysis.confidence.toFixed(1)}% ${analysis.reason}`, 'signal');
           await executeTrade(pair, analysis.signal, analysis.confidence);
           if(positions.length >= BOT_CONFIG.maxPositions) break;
         }
       } catch(e){ }
-      await new Promise(r=>setTimeout(r, 30));
+      await new Promise(r=>setTimeout(r, 80));
     }
-    
-    // FORCE TRADE if no trade for 45 sec - take best even low conf
-    const now = Date.now();
-    const secSinceLastTrade = (now - lastTradeTime)/1000;
-    if(secSinceLastTrade > BOT_CONFIG.forceTradeSec && positions.length < BOT_CONFIG.maxPositions && bestPair && bestAnalysis && bestConf > 25) {
-      log(`🔥 FORCE TRADE ${bestPair} ${bestAnalysis.signal} ${bestConf}% after ${secSinceLastTrade.toFixed(0)}s no trade - Super sensitive`, 'warn');
-      await executeTrade(bestPair, bestAnalysis.signal, bestConf, false, true);
-    }
-    
     io.emit('marketData', marketData);
     io.emit('scanLogs', scanLogs);
-    speedStats.lastMinTrades = speedStats.lastMinTrades.filter(t=> now - t < 60000);
-    speedStats.tradesPerMin = speedStats.lastMinTrades.length;
-    if(speedStats.closeTimes.length>0) speedStats.avgCloseSec = (speedStats.closeTimes.reduce((a,b)=>a+b,0)/speedStats.closeTimes.length).toFixed(1);
-    io.emit('stats', { totalProfit, winCount, lossCount, lastTradeAgo: Math.floor((Date.now()-lastTradeTime)/1000), trailingCount: Object.keys(trailingMap).length, todayProfit, todayTradesCount: todayTrades.length, winRate: (winCount+lossCount)>0 ? (winCount/(winCount+lossCount)*100).toFixed(1) : 0, unrealizedPnl: balance.pnl, consecutiveLosses, speedStats });
+    const now = Date.now();
+    balancedStats.lastMinTrades = balancedStats.lastMinTrades.filter(t=> now - t < 60000);
+    balancedStats.tradesPerMin = balancedStats.lastMinTrades.length;
+    if(balancedStats.closeTimes.length>0) balancedStats.avgCloseSec = (balancedStats.closeTimes.reduce((a,b)=>a+b,0)/balancedStats.closeTimes.length).toFixed(1);
+    io.emit('stats', { totalProfit, winCount, lossCount, lastTradeAgo: Math.floor((Date.now()-lastTradeTime)/1000), trailingCount: Object.keys(trailingMap).length, todayProfit, todayTradesCount: todayTrades.length, winRate: (winCount+lossCount)>0 ? (winCount/(winCount+lossCount)*100).toFixed(1) : 0, unrealizedPnl: balance.pnl, consecutiveLosses, balancedStats });
   }, BOT_CONFIG.scanIntervalMs);
 }
 
-app.get('/api/config', (req,res)=> res.json({ config: BOT_CONFIG, mode: MODE, pairs: TOP_PAIRS, balance, logs: scanLogs, stats: { totalProfit, winCount, lossCount, todayProfit, winRate: (winCount+lossCount)>0 ? (winCount/(winCount+lossCount)*100).toFixed(1) : 0, consecutiveLosses, speedStats }, trailing: trailingMap }));
+app.get('/api/config', (req,res)=> res.json({ config: BOT_CONFIG, mode: MODE, pairs: TOP_PAIRS, balance, logs: scanLogs, stats: { totalProfit, winCount, lossCount, todayProfit, winRate: (winCount+lossCount)>0 ? (winCount/(winCount+lossCount)*100).toFixed(1) : 0, consecutiveLosses, balancedStats }, trailing: trailingMap }));
 app.post('/api/config', (req,res)=>{
   const { leverage, marginUsdt, tpPercent, slPercent, maxPositions, minUsdt, confidenceThreshold, trailActPercent, trailDistancePercent, trailEnabled, maxDailyLoss, cooldownAfterLossSec, cooldownAfterWinSec } = req.body;
   if(leverage) BOT_CONFIG.leverage = parseInt(leverage);
@@ -419,80 +404,80 @@ app.post('/api/config', (req,res)=>{
   if(cooldownAfterLossSec!==undefined) BOT_CONFIG.cooldownAfterLossSec = parseInt(cooldownAfterLossSec);
   if(cooldownAfterWinSec!==undefined) BOT_CONFIG.cooldownAfterWinSec = parseInt(cooldownAfterWinSec);
   io.emit('config', BOT_CONFIG);
-  log(`Config V9 FIX TP ${BOT_CONFIG.tpPercent}% SL ${BOT_CONFIG.slPercent}% Thr ${BOT_CONFIG.confidenceThreshold}%`, 'info');
+  log(`Config V10 BAL TP ${BOT_CONFIG.tpPercent}% SL ${BOT_CONFIG.slPercent}% Thr ${BOT_CONFIG.confidenceThreshold}%`, 'info');
   res.json({ success: true, config: BOT_CONFIG });
 });
 
 app.post('/api/test-trade', async (req,res)=>{ await executeTrade(req.body.pair||'BTC/USDT', req.body.side||'LONG', 99, true); res.json({ success: true }); });
 app.post('/api/instant-trade', async (req,res)=>{
-  log('⚡ FIX INSTANT - Force trade testnet', 'info');
+  log('💰 BAL INSTANT - 3 pairs quality', 'info');
   let best = null, bestConf = 0;
   for(let pair of TOP_PAIRS){
     try {
-      const candles = await exchange.fetchOHLCV(pair, '1m', undefined, 25);
-      const analysis = calculateSpeedFixSignal(candles, pair);
-      if(analysis.confidence > bestConf) { bestConf = analysis.confidence; best = { pair, side: analysis.signal!=='HOLD'?analysis.signal:'LONG', conf: analysis.confidence, reason: analysis.reason }; }
+      const candles = await exchange.fetchOHLCV(pair, '1m', undefined, 30);
+      const analysis = calculateBalancedSignal(candles, pair);
+      if(analysis.confidence > bestConf && analysis.signal !== 'HOLD') { bestConf = analysis.confidence; best = { pair, side: analysis.signal, conf: analysis.confidence, reason: analysis.reason }; }
     } catch {}
   }
-  if(best) { await executeTrade(best.pair, best.side, best.conf, true); res.json({ success: true, picked: best }); }
-  else { res.json({ success: false, msg: 'No pair found - testnet low volatility' }); }
+  if(best && bestConf >= 55) { await executeTrade(best.pair, best.side, best.conf, true); res.json({ success: true, picked: best }); }
+  else { res.json({ success: false, msg: best ? `Best ${best.pair} ${best.conf.toFixed(1)}% but need 62% for quality` : 'No balanced setup - waiting trend + pullback (patience = no -$75 loss)' }); }
 });
 
 app.post('/api/bot/:action', (req,res)=>{
   const { action } = req.params;
-  if(action==='start'){ BOT_CONFIG.isRunning = true; lastTradeTime = Date.now(); speedStats={ scanned:0, micro:0, tradesPerMin:0, lastMinTrades:[], avgCloseSec:0, closeTimes:[], forced:0 }; io.emit('botStatus','RUNNING_FIX'); log(`🚀 FIX V9 STARTED - Super sensitive 0.005% MOM - Trade wenne na FIX`, 'success'); }
-  if(action==='stop'){ BOT_CONFIG.isRunning = false; io.emit('botStatus','STOPPED'); log('FIX STOPPED', 'warn'); }
+  if(action==='start'){ BOT_CONFIG.isRunning = true; lastTradeTime = Date.now(); balancedStats={ scanned:0, filtered:0, tradesPerMin:0, lastMinTrades:[], avgCloseSec:0, closeTimes:[] }; io.emit('botStatus','RUNNING_BALANCED'); log(`🚀 V10 BALANCED STARTED - Fix -$75 loss - TP 0.55% SL 0.40% Thr 62% - Quality over speed`, 'success'); }
+  if(action==='stop'){ BOT_CONFIG.isRunning = false; io.emit('botStatus','STOPPED'); log('BALANCED STOPPED - Capital protected', 'warn'); }
   if(action==='emergency'){
     BOT_CONFIG.isRunning = false;
     (async()=>{ for(const pos of positions){ try{ await exchange.createMarketOrder(pos.symbol, pos.side==='long'?'sell':'buy', Math.abs(pos.contracts), undefined, { reduceOnly: true }); }catch(e){} } trailingMap={}; })();
-    io.emit('botStatus','EMERGENCY_STOP'); log('EMERGENCY STOP', 'error');
+    io.emit('botStatus','EMERGENCY_STOP'); log('EMERGENCY STOP - All closed', 'error');
   }
   if(action==='reset-stats'){
-    totalProfit=0; winCount=0; lossCount=0; todayProfit=0; todayTrades=[]; tradeHistory=[]; trailingMap={}; consecutiveLosses=0; speedStats={ scanned:0, micro:0, tradesPerMin:0, lastMinTrades:[], avgCloseSec:0, closeTimes:[], forced:0 };
-    log('Stats reset - Fix fresh', 'warn'); io.emit('tradeHistory', tradeHistory);
+    totalProfit=0; winCount=0; lossCount=0; todayProfit=0; todayTrades=[]; tradeHistory=[]; trailingMap={}; consecutiveLosses=0; balancedStats={ scanned:0, filtered:0, tradesPerMin:0, lastMinTrades:[], avgCloseSec:0, closeTimes:[] }; BOT_CONFIG.confidenceThreshold=62;
+    log('Stats reset - Balanced fresh, no more -$75 loss', 'warn'); io.emit('tradeHistory', tradeHistory);
   }
   res.json({ success: true, isRunning: BOT_CONFIG.isRunning });
 });
 
-app.get('/api/balance', async (req,res)=>{ await fetchBalance(); res.json({...balance, totalProfit, winCount, lossCount, todayProfit, winRate: (winCount+lossCount)>0 ? (winCount/(winCount+lossCount)*100).toFixed(1) : 0, consecutiveLosses, speedStats }); });
+app.get('/api/balance', async (req,res)=>{ await fetchBalance(); res.json({...balance, totalProfit, winCount, lossCount, todayProfit, winRate: (winCount+lossCount)>0 ? (winCount/(winCount+lossCount)*100).toFixed(1) : 0, consecutiveLosses, balancedStats }); });
 app.get('/api/positions', (req,res)=> res.json(positions.map(p=>({...p, trailing: trailingMap[p.symbol]||null}))));
 app.get('/api/history', (req,res)=> res.json(tradeHistory));
 app.get('/api/logs', (req,res)=> res.json(scanLogs));
-app.get('/api/stats', (req,res)=> res.json({ totalProfit, winCount, lossCount, todayProfit, todayTrades, winRate: (winCount+lossCount)>0 ? (winCount/(winCount+lossCount)*100).toFixed(1) : 0, unrealizedPnl: balance.pnl, consecutiveLosses, speedStats }));
+app.get('/api/stats', (req,res)=> res.json({ totalProfit, winCount, lossCount, todayProfit, todayTrades, winRate: (winCount+lossCount)>0 ? (winCount/(winCount+lossCount)*100).toFixed(1) : 0, unrealizedPnl: balance.pnl, consecutiveLosses, balancedStats }));
 
 app.get('/', (req,res)=>{
   const publicPath = path.join(__dirname, 'public', 'index.html');
   const rootPath = path.join(__dirname, 'index.html');
   if (fs.existsSync(publicPath)) return res.sendFile(publicPath);
   else if (fs.existsSync(rootPath)) return res.sendFile(rootPath);
-  else return res.send('<h1>Fix Running</h1>');
+  else return res.send('<h1>Balanced Running</h1>');
 });
 
 io.on('connection', (socket)=>{
   socket.emit('config', BOT_CONFIG);
-  socket.emit('balance', { ...balance, totalProfit, winCount, lossCount, todayProfit, winRate: (winCount+lossCount)>0 ? (winCount/(winCount+lossCount)*100).toFixed(1) : 0, consecutiveLosses, speedStats });
+  socket.emit('balance', { ...balance, totalProfit, winCount, lossCount, todayProfit, winRate: (winCount+lossCount)>0 ? (winCount/(winCount+lossCount)*100).toFixed(1) : 0, consecutiveLosses, balancedStats });
   socket.emit('marketData', marketData);
   socket.emit('tradeHistory', tradeHistory);
   socket.emit('positions', positions.map(p=>({...p, trailing: trailingMap[p.symbol]||null})));
   socket.emit('scanLogs', scanLogs);
-  socket.emit('botStatus', BOT_CONFIG.isRunning?'RUNNING_FIX':'STOPPED');
+  socket.emit('botStatus', BOT_CONFIG.isRunning?'RUNNING_BALANCED':'STOPPED');
   socket.emit('trailing', trailingMap);
-  socket.emit('stats', { totalProfit, winCount, lossCount, todayProfit, todayTradesCount: todayTrades.length, winRate: (winCount+lossCount)>0 ? (winCount/(winCount+lossCount)*100).toFixed(1) : 0, unrealizedPnl: balance.pnl, consecutiveLosses, speedStats });
-  const balInterval = setInterval(fetchBalance, 2000);
+  socket.emit('stats', { totalProfit, winCount, lossCount, todayProfit, todayTradesCount: todayTrades.length, winRate: (winCount+lossCount)>0 ? (winCount/(winCount+lossCount)*100).toFixed(1) : 0, unrealizedPnl: balance.pnl, consecutiveLosses, balancedStats });
+  const balInterval = setInterval(fetchBalance, 2500);
   const statsInterval = setInterval(()=> { 
     const now = Date.now();
-    speedStats.lastMinTrades = speedStats.lastMinTrades.filter(t=> now - t < 60000);
-    speedStats.tradesPerMin = speedStats.lastMinTrades.length;
-    if(speedStats.closeTimes.length>0) speedStats.avgCloseSec = (speedStats.closeTimes.reduce((a,b)=>a+b,0)/speedStats.closeTimes.length).toFixed(1);
-    io.emit('stats', { totalProfit, winCount, lossCount, todayProfit, todayTradesCount: todayTrades.length, winRate: (winCount+lossCount)>0 ? (winCount/(winCount+lossCount)*100).toFixed(1) : 0, trailingCount: Object.keys(trailingMap).length, unrealizedPnl: balance.pnl, consecutiveLosses, speedStats, lastTradeAgo: Math.floor((Date.now()-lastTradeTime)/1000) }); 
+    balancedStats.lastMinTrades = balancedStats.lastMinTrades.filter(t=> now - t < 60000);
+    balancedStats.tradesPerMin = balancedStats.lastMinTrades.length;
+    if(balancedStats.closeTimes.length>0) balancedStats.avgCloseSec = (balancedStats.closeTimes.reduce((a,b)=>a+b,0)/balancedStats.closeTimes.length).toFixed(1);
+    io.emit('stats', { totalProfit, winCount, lossCount, todayProfit, todayTradesCount: todayTrades.length, winRate: (winCount+lossCount)>0 ? (winCount/(winCount+lossCount)*100).toFixed(1) : 0, trailingCount: Object.keys(trailingMap).length, unrealizedPnl: balance.pnl, consecutiveLosses, balancedStats, lastTradeAgo: Math.floor((Date.now()-lastTradeTime)/1000) }); 
   }, 1000);
   socket.on('disconnect', ()=> { clearInterval(balInterval); clearInterval(statsInterval); });
 });
 
 if(process.env.BINANCE_API_KEY && process.env.BINANCE_API_SECRET){
   initExchange(process.env.BINANCE_API_KEY, process.env.BINANCE_API_SECRET, MODE);
-  fetchBalance().then(()=>{ log(`✅ Connected ${MODE} FIX V9 READY - Super sensitive`, 'success'); startScanner(); }).catch(e=>log('Auto connect fail '+e.message, 'error'));
+  fetchBalance().then(()=>{ log(`✅ Connected ${MODE} V10 BALANCED READY - Fix -$75 loss`, 'success'); startScanner(); }).catch(e=>log('Auto connect fail '+e.message, 'error'));
 }
 
 const PORT = process.env.PORT || 3000;
-server.listen(PORT, ()=> console.log(`Bot V9 FIX ${PORT} Mode:${MODE}`));
+server.listen(PORT, ()=> console.log(`Bot V10 BALANCED ${PORT} Mode:${MODE}`));
